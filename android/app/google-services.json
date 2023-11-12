@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "854722410279",
+    "project_id": "todo-ea5b5",
+    "storage_bucket": "todo-ea5b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854722410279:android:bd162de3ec2361f65fdb02",
+        "android_client_info": {
+          "package_name": "com.AoyagiGames.todo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3tm33ktcbZlYU1XnT4clY9MwdKWRj7_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      },
+      "admob_app_id": "ca-app-pub-9039976303435151~7043137680"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854722410279:android:043d2d97cd11303e5fdb02",
+        "android_client_info": {
+          "package_name": "com.example.todo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3tm33ktcbZlYU1XnT4clY9MwdKWRj7_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
