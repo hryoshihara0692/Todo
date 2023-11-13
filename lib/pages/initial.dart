@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
-import 'package:todo/widgets/login_button.dart';
+import 'package:todo/widgets/round_button.dart';
 
 class InitialPage extends StatefulWidget {
   // const initialPage({super.key});
