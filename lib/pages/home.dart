@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
+import 'package:todo/widgets/todo.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,13 +43,29 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            const Divider(
+              height: 0,
+              thickness: 3,
+              indent: 0,
+              endIndent: 0,
+              color: Colors.black,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Todo(),
+            const Divider(
+              height: 0,
+              thickness: 3,
+              indent: 0,
+              endIndent: 0,
+              color: Colors.black,
+            ),
+            Todo(),
+            const Divider(
+              height: 0,
+              thickness: 3,
+              indent: 0,
+              endIndent: 0,
+              color: Colors.black,
             ),
             FutureBuilder(
                 future: AdSize.getAnchoredAdaptiveBannerAdSize(
@@ -70,11 +87,6 @@ class _HomePageState extends State<HomePage> {
                 }),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
