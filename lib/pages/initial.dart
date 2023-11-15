@@ -3,12 +3,11 @@ import 'package:todo/screen_pod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/round_button.dart';
+import 'package:go_router/go_router.dart';
 
 class InitialPage extends StatefulWidget {
   // const initialPage({super.key});
-  const InitialPage({super.key, required this.title});
-
-  final String title;
+  const InitialPage({super.key});
 
   @override
   State<InitialPage> createState() => _InitialPageState();
@@ -57,16 +56,18 @@ class _InitialPageState extends State<InitialPage> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   RoundButton(
                       buttonName: '新しく登録する',
+                      buttonWidth: 200,
                       onPressed: () {
-                        print('test');
+                        context.push('/account_registration');
                       }),
                   const SizedBox(
                     height: 50.0,
                   ),
                   RoundButton(
                       buttonName: 'データを復元する',
+                      buttonWidth: 200,
                       onPressed: () {
-                        print('test');
+                        context.push('/login');
                       }),
                 ])
               ],
