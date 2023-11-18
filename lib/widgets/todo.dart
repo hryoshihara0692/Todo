@@ -1,14 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
 
 class Todo extends StatelessWidget {
-
   const Todo({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(350);
     final designH = screen.designH(60);
@@ -20,7 +17,21 @@ class Todo extends StatelessWidget {
         shape: BoxShape.rectangle,
         color: Colors.white,
       ),
-      child: const Center(child: Text('a')),
+      child: Center(
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue,
+              ),
+            ),
+            Text('Todoの中身あああああああああああああああああああああああああああああああああああああああああああああ'),
+          ],
+        ),
+      ),
     );
   }
 }
