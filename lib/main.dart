@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,6 +11,11 @@ import 'package:go_router/go_router.dart';
 import 'package:todo/pages/home.dart';
 import 'package:todo/pages/initial.dart';
 import 'package:todo/pages/account_registration.dart';
+// RiverPodの勉強用
+// import 'package:todo/my_widget_s1.dart';
+// import 'package:todo/my_widget_s2.dart';
+// import 'package:todo/my_widget_s3.dart';
+// import 'package:todo/my_widget_s4.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -20,7 +26,7 @@ void main() async {
 
   MobileAds.instance.initialize();
 
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp(),) );
 }
 
 class MyApp extends StatelessWidget {
@@ -34,6 +40,8 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: '/',
         builder: (context, state) => const InitialPage(),
+        // RiverPodの確認
+        // builder: (context, state) => const MyWidget(),
       ),
       GoRoute(
         path: '/account_registration',
