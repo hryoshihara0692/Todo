@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AdMob _adMob = AdMob();
-  int _counter = 0;
 
   @override
   void initState() {
@@ -30,12 +29,6 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     _adMob.dispose();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
   }
 
   @override
