@@ -7,31 +7,56 @@ class Todo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-    final designW = screen.designW(350);
+    // final designW = screen.designW(350);
     final designH = screen.designH(60);
 
-    return Container(
-      width: designW,
-      height: designH,
-      decoration: const BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: Colors.white,
-      ),
-      child: Center(
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.blue,
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            // width: designW,
+            height: designH,
+            decoration: const BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    margin: EdgeInsets.fromLTRB(5,0,5,0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(0,5,0,5),
+                      child: Text(
+                        'Todoの中身あああああああああああああああああああああああああああああああああああああああああああああ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 30,
+                    height: 40,
+                    margin: EdgeInsets.fromLTRB(5,0,5,0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text('Todoの中身あああああああああああああああああああああああああああああああああああああああああああああ'),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

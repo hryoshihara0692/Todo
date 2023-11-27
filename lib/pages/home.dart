@@ -7,6 +7,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/todo.dart';
+import 'package:todo/widgets/my_divider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,33 +40,60 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Divider(
-              height: 0,
-              thickness: 3,
-              indent: 0,
-              endIndent: 0,
-              color: Colors.black,
-            ),
-            Todo(),
-            const Divider(
-              height: 0,
-              thickness: 3,
-              indent: 0,
-              endIndent: 0,
-              color: Colors.black,
-            ),
-            Todo(),
-            const Divider(
-              height: 0,
-              thickness: 3,
-              indent: 0,
-              endIndent: 0,
-              color: Colors.black,
+            Expanded(
+              child: Container(
+                width: 375,
+                child: ListView(
+
+                  children: const [
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                    Todo(),
+                    MyDivider(),
+                  ],
+                ),
+              ),
             ),
             FutureBuilder(
                 future: AdSize.getAnchoredAdaptiveBannerAdSize(
