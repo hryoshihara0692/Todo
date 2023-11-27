@@ -38,74 +38,75 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              child: Container(
-                width: 375,
-                child: ListView(
+            // Expanded(
+            //   child: Container(
+            //     width: 375,
+            //     child: ListView(
 
-                  children: const [
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                  ],
-                ),
-              ),
-            ),
+            //       children: const [
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //         Todo(),
+            //         MyDivider(),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             FutureBuilder(
-                future: AdSize.getAnchoredAdaptiveBannerAdSize(
-                    Orientation.portrait,
-                    MediaQuery.of(context).size.width.truncate()),
-                builder: (BuildContext context,
-                    AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-                  if (snapshot.hasData) {
-                    return SizedBox(
-                      width: double.infinity,
-                      child: _adMob.getAdBanner(),
-                    );
-                  } else {
-                    return Container(
-                      height: _adMob.getAdBannerHeight(),
-                      color: Colors.white,
-                    );
-                  }
-                }),
+              future: AdSize.getAnchoredAdaptiveBannerAdSize(
+                  Orientation.portrait,
+                  MediaQuery.of(context).size.width.truncate()),
+              builder: (BuildContext context,
+                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: _adMob.getAdBanner(),
+                  );
+                } else {
+                  return Container(
+                    height: _adMob.getAdBannerHeight(),
+                    color: Colors.white,
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
