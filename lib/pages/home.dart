@@ -60,16 +60,27 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Column(
                     children: [
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 232, 89, 79),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
+                      GestureDetector(
+                        onTap: () {
+                          print('トマトをタップした！');
+                        },
+                        onDoubleTap: () {
+                          print('ダブルタップした！');
+                        },
+                        onLongPress: () {
+                          print('長押しした！');
+                        },
+                        child: Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 232, 89, 79),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                              child: Image.asset('images/tomato.png'),
+                              ),
                         ),
                       ),
                       Container(
