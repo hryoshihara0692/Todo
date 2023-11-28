@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:todo/screen_pod.dart';
 
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
-import 'package:todo/widgets/todo.dart';
-import 'package:todo/widgets/my_divider.dart';
+// import 'package:todo/widgets/todo.dart';
+// import 'package:todo/widgets/my_divider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,11 +34,153 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = ScreenRef(context).watch(screenProvider);
+    final designW = screen.designW(110);
+    final designH = screen.designH(105);
     return SafeArea(
       child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Expanded(
+              child: Container(
+                width: 350,
+                margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Color.fromARGB(255, 145, 145, 145),
+                ),
+                child: Image.asset('images/tomato.png'),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 25, 0, 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 232, 89, 79),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 79, 232, 138),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 128, 79, 232),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 128, 79, 232),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 232, 89, 79),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 79, 232, 138),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 79, 232, 138),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 128, 79, 232),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                      Container(
+                        width: designW,
+                        height: designH,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Color.fromARGB(255, 232, 89, 79),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: Center(
+                          child: Image.asset('images/tomato.png'),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
             // Expanded(
             //   child: Container(
             //     width: 375,
