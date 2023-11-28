@@ -7,8 +7,7 @@ import 'package:todo/screen_pod.dart';
 
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
-// import 'package:todo/widgets/todo.dart';
-// import 'package:todo/widgets/my_divider.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,40 +36,96 @@ class _HomePageState extends State<HomePage> {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(110);
     final designH = screen.designH(105);
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                width: 350,
-                margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Color.fromARGB(255, 145, 145, 145),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+        child: Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                  width: 350,
+                  margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    color: Color.fromARGB(255, 145, 145, 145),
+                  ),
+                  child: Image.asset('images/tomato.png'),
                 ),
-                child: Image.asset('images/tomato.png'),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 25, 0, 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          print('トマトをタップした！');
-                        },
-                        onDoubleTap: () {
-                          print('ダブルタップした！');
-                        },
-                        onLongPress: () {
-                          print('長押しした！');
-                        },
-                        child: Container(
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 25, 0, 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // print('トマトをタップした！');
+                            context.push('/category_todo');
+                          },
+                          onDoubleTap: () {
+                            print('ダブルタップした！');
+                          },
+                          onLongPress: () {
+                            print('長押しした！');
+                          },
+                          child: Container(
+                            width: designW,
+                            height: designH,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              color: Color.fromARGB(255, 232, 89, 79),
+                            ),
+                            margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                            child: Center(
+                                child: Image.asset('images/tomato.png'),
+                                ),
+                          ),
+                        ),
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 79, 232, 138),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
+                        ),
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 128, 79, 232),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 128, 79, 232),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
+                        ),
+                        Container(
                           width: designW,
                           height: designH,
                           decoration: const BoxDecoration(
@@ -79,189 +134,87 @@ class _HomePageState extends State<HomePage> {
                           ),
                           margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                           child: Center(
-                              child: Image.asset('images/tomato.png'),
-                              ),
+                            child: Image.asset('images/tomato.png'),
+                          ),
                         ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 79, 232, 138),
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 79, 232, 138),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
                         ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 79, 232, 138),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
                         ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 128, 79, 232),
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 128, 79, 232),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
                         ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
+                        Container(
+                          width: designW,
+                          height: designH,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Color.fromARGB(255, 232, 89, 79),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          child: Center(
+                            child: Image.asset('images/tomato.png'),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 128, 79, 232),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 232, 89, 79),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 79, 232, 138),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 79, 232, 138),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 128, 79, 232),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                      Container(
-                        width: designW,
-                        height: designH,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color.fromARGB(255, 232, 89, 79),
-                        ),
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: Center(
-                          child: Image.asset('images/tomato.png'),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            // Expanded(
-            //   child: Container(
-            //     width: 375,
-            //     child: ListView(
-
-            //       children: const [
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //         Todo(),
-            //         MyDivider(),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            FutureBuilder(
-              future: AdSize.getAnchoredAdaptiveBannerAdSize(
-                  Orientation.portrait,
-                  MediaQuery.of(context).size.width.truncate()),
-              builder: (BuildContext context,
-                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: _adMob.getAdBanner(),
-                  );
-                } else {
-                  return Container(
-                    height: _adMob.getAdBannerHeight(),
-                    color: Colors.white,
-                  );
-                }
-              },
-            ),
-          ],
+              FutureBuilder(
+                future: AdSize.getAnchoredAdaptiveBannerAdSize(
+                    Orientation.portrait,
+                    MediaQuery.of(context).size.width.truncate()),
+                builder: (BuildContext context,
+                    AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+                  if (snapshot.hasData) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: _adMob.getAdBanner(),
+                    );
+                  } else {
+                    return Container(
+                      height: _adMob.getAdBannerHeight(),
+                      color: Colors.white,
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:todo/pages/home.dart';
 import 'package:todo/pages/initial.dart';
 import 'package:todo/pages/account_registration.dart';
 import 'package:todo/pages/login.dart';
+import 'package:todo/pages/category_todo.dart';
 // RiverPodの勉強用
 // import 'package:todo/my_widget_s1.dart';
 // import 'package:todo/my_widget_s2.dart';
@@ -55,6 +56,10 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: '/category_todo',
+        builder: (context, state) => const CategoryTodoPage(),
       ),
     ],
   );
