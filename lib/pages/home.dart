@@ -7,6 +7,7 @@ import 'package:todo/screen_pod.dart';
 
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
+import 'package:todo/widgets/side_menu.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -40,6 +41,8 @@ class _HomePageState extends State<HomePage> {
       onWillPop: () async => false,
       child: SafeArea(
         child: Scaffold(
+          appBar: AppBar(),
+          drawer: SideMenu(),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
