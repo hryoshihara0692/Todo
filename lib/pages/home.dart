@@ -41,7 +41,18 @@ class _HomePageState extends State<HomePage> {
       onWillPop: () async => false,
       child: SafeArea(
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.black),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('images/tomato.png'),
+                    fit: BoxFit.cover),
+              ),
+            ),
+          ),
           drawer: SideMenu(),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -84,8 +95,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                             margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                             child: Center(
-                                child: Image.asset('images/tomato.png'),
-                                ),
+                              child: Image.asset('images/tomato.png'),
+                            ),
                           ),
                         ),
                         Container(
