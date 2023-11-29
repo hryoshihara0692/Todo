@@ -100,7 +100,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                       buttonName: 'アカウント登録する',
                       buttonWidth: 150,
                       onPressed: () {
-                        context.push('/home');
+                        context.push('/');
                       },
                     ),
                   ],

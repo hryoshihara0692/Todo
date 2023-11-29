@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                       buttonName: 'ログインする',
                       buttonWidth: 150,
                       onPressed: () {
-                        context.push('/home');
+                        context.push('/');
                       },
                     ),
                   ],

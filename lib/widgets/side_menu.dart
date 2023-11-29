@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -20,10 +21,16 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.login),
             title: Text('ログイン'),
+            onTap: () {
+              context.push('/login');
+            },
           ),
           ListTile(
             leading: Icon(Icons.person_add),
             title: Text('新規登録'),
+            onTap: () {
+              context.push('/account_registration');
+            },
           ),
           ListTile(
             leading: Icon(Icons.notifications),
@@ -33,7 +40,7 @@ class SideMenu extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('プレミアムプラン'),
           ),
-                    ListTile(
+          ListTile(
             leading: Icon(Icons.person),
             title: Text('ヘルプ'),
           ),
