@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
-import 'package:todo/pages/initial.dart';
 import 'package:todo/pages/account_registration.dart';
 import 'package:todo/pages/login.dart';
 import 'package:todo/pages/category_todo.dart';
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const InitialPage(),
+        builder: (context, state) => const HomePage(),
         // RiverPodの確認
         // builder: (context, state) => const MyWidget(),
       ),
@@ -53,10 +52,7 @@ class MyApp extends StatelessWidget {
         path: '/login',
         builder: (context, state) => const LoginPage(),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomePage(),
-      ),
+
       GoRoute(
         path: '/category_todo',
         builder: (context, state) => const CategoryTodoPage(),
