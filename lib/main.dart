@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
     //   // home: const InitialPage(),
     // );
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routeInformationProvider: router.routeInformationProvider,
       routeInformationParser: router.routeInformationParser,
       routerDelegate: router.routerDelegate,
