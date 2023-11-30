@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
+import 'package:go_router/go_router.dart';
 
 class Todo extends StatelessWidget {
   const Todo({super.key});
@@ -23,18 +24,30 @@ class Todo extends StatelessWidget {
             child: Center(
               child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    margin: EdgeInsets.fromLTRB(5,0,5,0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue,
+                  GestureDetector(
+                    onTap: () {
+                      // print('トマトをタップした！');
+                      context.push('/category_todo');
+                    },
+                    onDoubleTap: () {
+                      print('ダブルタップした！');
+                    },
+                    onLongPress: () {
+                      print('長押しした！');
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                   Flexible(
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(0,5,0,5),
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                       child: Text(
                         'Todoの中身あああああああああああああああああああああああああああああああああああああああああああああ',
                         maxLines: 2,
@@ -45,7 +58,7 @@ class Todo extends StatelessWidget {
                   Container(
                     width: 30,
                     height: 40,
-                    margin: EdgeInsets.fromLTRB(5,0,5,0),
+                    margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.green,
