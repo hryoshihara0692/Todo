@@ -38,6 +38,14 @@ class _HomePageState extends State<HomePage> {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(110);
     final designH = screen.designH(105);
+    int _selectedIndex = 0;
+
+    void _onItemTapped(int index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
     return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(
@@ -65,7 +73,10 @@ class _HomePageState extends State<HomePage> {
                     shape: BoxShape.rectangle,
                     color: Color.fromARGB(255, 145, 145, 145),
                   ),
-                  child: Image.asset('images/tomato.png'),
+                  child: Image.asset(
+                    'images/plus.png',
+                    color: Colors.blue,
+                  ),
                 ),
               ),
               ElevatedButton(
@@ -75,7 +86,8 @@ class _HomePageState extends State<HomePage> {
                   context: context,
                   // 自前でモーダル用Navigatorを作成
                   builder: (context) => Navigator(
-                    onGenerateRoute: (context) => MaterialPageRoute<CreateTodoPage>(
+                    onGenerateRoute: (context) =>
+                        MaterialPageRoute<CreateTodoPage>(
                       builder: (context) => CreateTodoPage(),
                     ),
                   ),
@@ -242,6 +254,19 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ],
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'ホーム'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite), label: 'お気に入り'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications), label: 'お知らせ'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'アカウント'),
+            ],
+            type: BottomNavigationBarType.fixed,
           ),
         ),
       ),
