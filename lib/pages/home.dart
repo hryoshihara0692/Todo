@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/screen_pod.dart';
 
 // Project imports:
+import 'package:todo/pages/create_todo.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/side_menu.dart';
 import 'package:go_router/go_router.dart';
@@ -48,8 +49,7 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/tomato.png'),
-                    fit: BoxFit.cover),
+                    image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
               ),
             ),
           ),
@@ -67,6 +67,20 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Image.asset('images/tomato.png'),
                 ),
+              ),
+              ElevatedButton(
+                // color: Colors.blue,
+                // textColor: Colors.white,
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  // 自前でモーダル用Navigatorを作成
+                  builder: (context) => Navigator(
+                    onGenerateRoute: (context) => MaterialPageRoute<CreateTodoPage>(
+                      builder: (context) => CreateTodoPage(),
+                    ),
+                  ),
+                ),
+                child: Text('Show modal'),
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(0, 25, 0, 25),
