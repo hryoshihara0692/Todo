@@ -13,6 +13,8 @@ class CreateTodoPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
             // 閉じるときはネストしているModal内のRouteではなく、root側のNavigatorを指定する必要がある
             onPressed: () {
@@ -20,8 +22,12 @@ class CreateTodoPage extends StatelessWidget {
               Navigator.of(context, rootNavigator: true).pop();
             },
             icon: Icon(Icons.close)),
-        title: Text('Modal'),
+        // title: Text('Modal'),
+        foregroundColor: Colors.black,
       ),
+      body: Column(children: [
+
+      ],),
     );
   }
 }
