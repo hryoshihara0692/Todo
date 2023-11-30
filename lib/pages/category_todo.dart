@@ -17,7 +17,6 @@ class CategoryTodoPage extends StatefulWidget {
   State<CategoryTodoPage> createState() => _CategoryTodoPageState();
 }
 
-
 class _CategoryTodoPageState extends State<CategoryTodoPage> {
   final AdMob _adMob = AdMob();
 
@@ -33,20 +32,31 @@ class _CategoryTodoPageState extends State<CategoryTodoPage> {
     _adMob.dispose();
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(110);
     final designH = screen.designH(105);
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
+            ),
+          ),
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              width: 350,
+              width: 400,
               height: 100,
-              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
               decoration: const BoxDecoration(
                 shape: BoxShape.rectangle,
                 color: Color.fromARGB(255, 145, 145, 145),
@@ -55,9 +65,13 @@ class _CategoryTodoPageState extends State<CategoryTodoPage> {
             ),
             Expanded(
               child: Container(
-                width: 375,
+                width: 400,
+                padding: EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Color.fromARGB(255, 182, 19, 19),
+                ),
                 child: ListView(
-
                   children: const [
                     Todo(),
                     MyDivider(),
