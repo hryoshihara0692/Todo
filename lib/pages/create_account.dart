@@ -5,16 +5,16 @@ import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/round_button.dart';
 import 'package:go_router/go_router.dart';
 
-class AccountRegistrationPage extends StatefulWidget {
+class CreateAccountPage extends StatefulWidget {
   // const AccountRegistrationPage({super.key});
-  const AccountRegistrationPage({super.key});
+  const CreateAccountPage({super.key});
 
   @override
-  State<AccountRegistrationPage> createState() =>
-      _AccountRegistrationPageState();
+  State<CreateAccountPage> createState() =>
+      _CreateAccountPageState();
 }
 
-class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
+class _CreateAccountPageState extends State<CreateAccountPage> {
   final AdMob _adMob = AdMob();
 
   @override

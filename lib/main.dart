@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
-import 'package:todo/pages/account_registration.dart';
+import 'package:todo/pages/create_account.dart';
 import 'package:todo/pages/login.dart';
 import 'package:todo/pages/category_todo.dart';
 // RiverPodの勉強用
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/account_registration',
-        builder: (context, state) => const AccountRegistrationPage(),
+        builder: (context, state) => const CreateAccountPage(),
       ),
       GoRoute(
         path: '/login',
