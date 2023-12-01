@@ -19,6 +19,7 @@ dependencies:
   flutter_hooks:
   riverpod_annotation:
   firebase_analytics:
+  firebase_auth: ^4.15.0
 
 dev_dependencies:
   flutter_test:
