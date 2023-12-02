@@ -20,6 +20,8 @@ dependencies:
   riverpod_annotation:
   firebase_analytics:
   firebase_auth: ^4.15.0
+  sqflite: ^2.3.0
+  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:
