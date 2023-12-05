@@ -10,14 +10,28 @@ https://yakiimosan.com/flutter-sqlite-basic/
 
 class DatabaseHelper {
 
-  static final _databaseName = "MyDatabase.db"; // DB名
+  static final _databaseName = "todo.db"; // DB名
   static final _databaseVersion = 1; // スキーマのバージョン指定
 
-  static final table = 'my_table'; // テーブル名
+  static final table = 'todo'; // テーブル名
 
-  static final columnId = '_id'; // カラム名：ID
-  static final columnName = 'name'; // カラム名:Name
-  static final columnAge = 'age'; // カラム名：age
+  static final columnTodoId = 'todo_id'; // カラム名：ID
+  static final columnTodoName = 'todo_name'; // カラム名:Name
+  static final columnTodoContent = 'todo_content'; // カラム名：age
+  static final columnTodoCompleteFlag = 'todo_complete_flag'; // カラム名：age
+  static final columnCategoryId = 'category_id'; // カラム名：age
+  static final columnCategoryName = 'category_Name'; // カラム名：age
+  static final columnCreateUserId = 'create_user_id'; // カラム名：age
+  static final columnAssignedUserId = 'assigned_user_id'; // カラム名：age
+  static final columnReminderDate = 'reminder_date'; // カラム名：age
+  static final columnReminderNumber = 'reminder_number'; // カラム名：age
+  static final columnReminderEveryFlag = 'reminder_every_flags'; // カラム名：age
+  static final columnReminderTime = 'reminder_time'; // カラム名：age
+  static final columnReminderStartTime = 'reminder_start_time'; // カラム名：age
+  static final columnDeadline = 'deadline'; // カラム名：age
+  static final columnCreateDate = 'create_date'; // カラム名：age
+  static final columnUpdateDate = 'update_date'; // カラム名：age
+  static final columnGroupId = 'group_id'; // カラム名：age
 
   // DatabaseHelper クラスを定義
   DatabaseHelper._privateConstructor();
@@ -62,9 +76,23 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $table (
-            $columnId INTEGER PRIMARY KEY,
-            $columnName TEXT NOT NULL,
-            $columnAge INTEGER NOT NULL
+            $columnTodoId TEXT PRIMARY KEY,
+            $columnTodoName TEXT NOT NULL,
+            $columnTodoContent TEXT NOT NULL,
+            $columnTodoCompleteFlag INTEGER NOT NULL,
+            $columnCategoryId TEXT NOT NULL,
+            $columnCategoryName TEXT NOT NULL,
+            $columnCreateUserId TEXT NOT NULL,
+            $columnAssignedUserId TEXT,
+            $columnReminderDate TEXT,
+            $columnReminderNumber TEXT,
+            $columnReminderEveryFlag INTEGER,
+            $columnReminderTime TEXT,
+            $columnReminderStartTime TEXT,
+            $columnDeadline TEXT,
+            $columnCreateDate TEXT NOT NULL,
+            $columnUpdateDate TEXT NOT NULL,
+            $columnGroupId TEXT
           )
           ''');
   }
@@ -90,13 +118,13 @@ class DatabaseHelper {
   //　更新処理
    Future<int> update(Map<String, dynamic> row) async {
     Database? db = await instance.database;
-    int id = row[columnId];
-    return await db!.update(table, row, where: '$columnId = ?', whereArgs: [id]);
+    int id = row[columnTodoId];
+    return await db!.update(table, row, where: '$columnTodoId = ?', whereArgs: [id]);
   }
 
   //　削除処理
    Future<int> delete(int id) async {
     Database? db = await instance.database;
-    return await db!.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db!.delete(table, where: '$columnTodoId = ?', whereArgs: [id]);
   }
 }
