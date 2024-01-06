@@ -90,11 +90,9 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                // print('トマトをタップした！');
-                                // context.push('/category_todo');
                                 Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CategoryTodoPage(),
+                                  SlidePageRoute(
+                                    page: CategoryTodoPage(),
                                   ),
                                 );
                               },
@@ -317,4 +315,27 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class SlidePageRoute extends PageRouteBuilder {
+  final Widget page;
+
+  SlidePageRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOutQuart;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
 }
