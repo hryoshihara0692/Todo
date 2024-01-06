@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:todo/pages/category_todo.dart';
 import 'package:todo/screen_pod.dart';
 
 // Project imports:
 import 'package:todo/pages/create_todo.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/side_menu.dart';
-import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -91,7 +91,12 @@ class _HomePageState extends State<HomePage> {
                             GestureDetector(
                               onTap: () {
                                 // print('トマトをタップした！');
-                                context.push('/category_todo');
+                                // context.push('/category_todo');
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CategoryTodoPage(),
+                                  ),
+                                );
                               },
                               onDoubleTap: () {
                                 print('ダブルタップした！');
@@ -246,15 +251,25 @@ class _HomePageState extends State<HomePage> {
                 alignment: Alignment.bottomRight,
                 child: GestureDetector(
                   onTap: () {
+                    // showModalBottomSheet<int>(
+                    //   context: context,
+                    //   isScrollControlled: true,
+                    //   // 自前でモーダル用Navigatorを作成
+                    //   builder: (context) => Navigator(
+                    //     onGenerateRoute: (context) =>
+                    //         MaterialPageRoute<CreateTodoPage>(
+                    //       builder: (context) => CreateTodoPage(),
+                    //     ),
+                    //   ),
+                    // );
                     showModalBottomSheet(
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20))),
                       context: context,
-                      // 自前でモーダル用Navigatorを作成
-                      builder: (context) => Navigator(
-                        onGenerateRoute: (context) =>
-                            MaterialPageRoute<CreateTodoPage>(
-                          builder: (context) => CreateTodoPage(),
-                        ),
-                      ),
+                      // showModalBottomSheetで表示される中身
+                      builder: (context) => CreateTodoPage(),
                     );
                   },
                   onDoubleTap: () {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:go_router/go_router.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
@@ -18,6 +17,7 @@ import 'package:todo/pages/category_todo.dart';
 // import 'package:todo/my_widget_s3.dart';
 // import 'package:todo/my_widget_s4.dart';
 import 'firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,54 +27,53 @@ void main() async {
 
   MobileAds.instance.initialize();
 
-  runApp(ProviderScope(child: MyApp(),) );
+  runApp(ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final router = GoRouter(
-    // パス (アプリが起動したとき)
-    initialLocation: '/',
-    // パスと画面の組み合わせ
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomePage(),
-        // RiverPodの確認
-        // builder: (context, state) => const MyWidget(),
-      ),
-      GoRoute(
-        path: '/account_registration',
-        builder: (context, state) => const CreateAccountPage(),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
-
-      GoRoute(
-        path: '/category_todo',
-        builder: (context, state) => const CategoryTodoPage(),
-      ),
-    ],
-  );
-
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('ja'),
+      ],
+      locale: const Locale('ja'),
+      home: const HomePage(),
+      // home: const InitialPage(),
+    );
     // return MaterialApp(
     //   title: 'Flutter Demo',
-    //   theme: ThemeData(
-    //     primarySwatch: Colors.blue,
-    //   ),
-    //   // home: const HomePage(title: 'Admob Demo'),
-    //   // home: const InitialPage(),
+    //   localizationsDelegates: const [
+    //     GlobalMaterialLocalizations.delegate,
+    //     GlobalWidgetsLocalizations.delegate,
+    //     GlobalCupertinoLocalizations.delegate,
+    //   ],
+    //   // 他のMaterialAppの設定もここに追加できます
+    //   builder: (context, child) {
+    //     return Overlay(
+    //       initialEntries: [
+    //         OverlayEntry(
+    //           builder: (context) => MaterialApp.router(
+    //             debugShowCheckedModeBanner: false,
+    //             routeInformationProvider: router.routeInformationProvider,
+    //             routeInformationParser: router.routeInformationParser,
+    //             routerDelegate: router.routerDelegate,
+    //           ),
+    //         ),
+    //       ],
+    //     );
+    //   },
     // );
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routeInformationProvider: router.routeInformationProvider,
-      routeInformationParser: router.routeInformationParser,
-      routerDelegate: router.routerDelegate,
-    );
   }
 }
