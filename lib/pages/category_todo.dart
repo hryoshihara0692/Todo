@@ -40,36 +40,36 @@ class _CategoryTodoPageState extends State<CategoryTodoPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Color.fromARGB(175, 255, 130, 130),
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black),
           flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
-            ),
+            // decoration: BoxDecoration(
+            //   image: DecorationImage(
+            //       image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
+            // ),
           ),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              width: 400,
+              width: double.infinity,
               height: 100,
-              margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+              // margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
               decoration: const BoxDecoration(
                 shape: BoxShape.rectangle,
-                color: Color.fromARGB(255, 145, 145, 145),
+                color: Color.fromARGB(175, 255, 130, 130),
               ),
               child: Image.asset('images/tomato.png'),
             ),
             Expanded(
               child: Container(
-                width: 400,
+                width: double.infinity,
                 padding: EdgeInsets.all(10),
                 decoration: const BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: Color.fromARGB(255, 182, 19, 19),
+                  color: Color.fromARGB(175, 255, 130, 130),
                 ),
                 child: ListView(
                   children: const [

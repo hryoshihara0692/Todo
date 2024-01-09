@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:todo/pages/create_todo.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
@@ -48,9 +49,9 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         const Locale('ja'),
       ],
-      locale: const Locale('ja'),
+      // locale: const Locale('ja'),
       home: const HomePage(),
-      // home: const InitialPage(),
+      // home: CategoryTodoPage(),
     );
     // return MaterialApp(
     //   title: 'Flutter Demo',
