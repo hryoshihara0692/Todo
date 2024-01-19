@@ -37,107 +37,144 @@ class _CategoryTodoPageState extends State<CategoryTodoPage> {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(110);
     final designH = screen.designH(105);
+
+    List<String> items = ['Item 1', 'Item 2', 'Item 3'];
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(175, 255, 130, 130),
+          // backgroundColor: Color.fromARGB(175, 255, 130, 130),
+          backgroundColor: Colors.white,
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black),
           flexibleSpace: Container(
-            // decoration: BoxDecoration(
-            //   image: DecorationImage(
-            //       image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
-            // ),
-          ),
+              // decoration: BoxDecoration(
+              //   image: DecorationImage(
+              //       image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
+              // ),
+              ),
         ),
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 100,
-              // margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
-              decoration: const BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: Color.fromARGB(175, 255, 130, 130),
-              ),
-              child: Image.asset('images/tomato.png'),
+            ElevatedButton(
+              onPressed: () {
+                // ボタンが押下されたときの処理
+                setState(() {
+                  // リストに新しいアイテムを追加
+                  items.add('New Item ${items.length + 1}');
+                });
+              },
+              child: Text('Add Item'),
             ),
             Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Color.fromARGB(175, 255, 130, 130),
-                ),
-                child: ListView(
-                  children: const [
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                    Todo(),
-                    MyDivider(),
-                  ],
-                ),
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(items[index]),
+                  );
+                },
               ),
-            ),
-            FutureBuilder(
-              future: AdSize.getAnchoredAdaptiveBannerAdSize(
-                  Orientation.portrait,
-                  MediaQuery.of(context).size.width.truncate()),
-              builder: (BuildContext context,
-                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: _adMob.getAdBanner(),
-                  );
-                } else {
-                  return Container(
-                    height: _adMob.getAdBannerHeight(),
-                    color: Colors.white,
-                  );
-                }
-              },
             ),
           ],
         ),
+        // body: Column(
+        //   mainAxisAlignment: MainAxisAlignment.start,
+        //   children: [
+
+        // Container(
+        //   width: double.infinity,
+        //   height: 100,
+        //   // margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+        //   decoration: const BoxDecoration(
+        //     shape: BoxShape.rectangle,
+        //     color: Color.fromARGB(175, 255, 130, 130),
+        //   ),
+        //   child: Image.asset('images/tomato.png'),
+        // ),
+
+        // Expanded(
+        //   child: Container(
+        //     width: double.infinity,
+        //     padding: EdgeInsets.all(10),
+        //     decoration: const BoxDecoration(
+        //       shape: BoxShape.rectangle,
+        //       // color: Color.fromARGB(175, 255, 130, 130),
+        //     ),
+        //     child: Scrollbar(
+        //       thickness: 9,
+        //       thumbVisibility: true,
+        //       radius: const Radius.circular(20),
+        //       child: ListView(
+        //         children: const [
+        //           Todo(),
+        //           // MyDivider(),
+        //           Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //           // Todo(),
+        //           // MyDivider(),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
+
+        //   FutureBuilder(
+        //     future: AdSize.getAnchoredAdaptiveBannerAdSize(
+        //         Orientation.portrait,
+        //         MediaQuery.of(context).size.width.truncate()),
+        //     builder: (BuildContext context,
+        //         AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+        //       if (snapshot.hasData) {
+        //         return SizedBox(
+        //           width: double.infinity,
+        //           child: _adMob.getAdBanner(),
+        //         );
+        //       } else {
+        //         return Container(
+        //           height: _adMob.getAdBannerHeight(),
+        //           color: Colors.white,
+        //         );
+        //       }
+        //     },
+        //   ),
+
+        // ],
+        // ),
       ),
     );
   }

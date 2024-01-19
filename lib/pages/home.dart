@@ -10,6 +10,9 @@ import 'package:todo/screen_pod.dart';
 import 'package:todo/pages/create_todo.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/side_menu.dart';
+import 'package:todo/widgets/category_button.dart';
+
+import 'package:todo/widgets/todo.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,15 +39,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-    final designW = screen.designW(110);
-    final designH = screen.designH(105);
-    int _selectedIndex = 0;
+    final categoryWidth = screen.designW(110);
+    final categoryHeight = screen.designH(105);
 
-    void _onItemTapped(int index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+    final imagePath = 'images/tomato.png';
+
+    //画面下のメニュー用
+    // int _selectedIndex = 0;
+    // void _onItemTapped(int index) {
+    //   setState(() {
+    //     _selectedIndex = index;
+    //   });
+    // }
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -57,168 +63,69 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/tomato.png'), fit: BoxFit.cover),
+                    image: AssetImage(imagePath), fit: BoxFit.cover),
               ),
             ),
           ),
           drawer: SideMenu(),
           body: Stack(
             children: [
+              Todo(),
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Container(
-                      width: 350,
-                      margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        color: Color.fromARGB(255, 145, 145, 145),
-                      ),
-                      child: Image.asset(
-                        'images/plus.png',
-                        color: Colors.blue,
-                      ),
+                  //TOP下の広いメニュー
+                  // Expanded(
+                  //   child: Container(
+                  //     width: 350,
+                  //     margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+                  //     decoration: const BoxDecoration(
+                  //       shape: BoxShape.rectangle,
+                  //       color: Color.fromARGB(255, 145, 145, 145),
+                  //     ),
+                  //     child: Image.asset(
+                  //       'images/plus.png',
+                  //       color: Colors.blue,
+                  //     ),
+                  //   ),
+                  // ),
+                  TextField(
+                    maxLines: null, // nullで複数行入力が有効になります
+                    // expands: true, // 常に複数行の状態を維持します
+                    decoration: InputDecoration(
+                      hintText: '複数行入力してください',
+                      border: OutlineInputBorder(),
                     ),
                   ),
+                  //カテゴリボタン9つの場所
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 25, 0, 25),
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  SlidePageRoute(
-                                    page: CategoryTodoPage(),
-                                  ),
-                                );
-                              },
-                              onDoubleTap: () {
-                                print('ダブルタップした！');
-                              },
-                              onLongPress: () {
-                                print('長押しした！');
-                              },
-                              child: Container(
-                                width: designW,
-                                height: designH,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Color.fromARGB(255, 232, 89, 79),
-                                ),
-                                margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                child: Center(
-                                  child: Image.asset('images/tomato.png'),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 79, 232, 138),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 128, 79, 232),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
                           ],
                         ),
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 128, 79, 232),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 232, 89, 79),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 79, 232, 138),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
                           ],
                         ),
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 79, 232, 138),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 128, 79, 232),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
-                            Container(
-                              width: designW,
-                              height: designH,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Color.fromARGB(255, 232, 89, 79),
-                              ),
-                              margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                              child: Center(
-                                child: Image.asset('images/tomato.png'),
-                              ),
-                            ),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
+                            CategoryButton(imagePath: imagePath),
                           ],
                         )
                       ],
