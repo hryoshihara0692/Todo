@@ -9,6 +9,10 @@ import 'package:todo/components/ad_mob.dart';
 
 import 'package:todo/pages/Item.dart';
 
+import 'package:todo/database/database_helper2.dart';
+
+import 'package:uuid/uuid.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -56,6 +60,49 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // DatabaseHelper クラスのインスタンス取得
+  final dbHelper = DatabaseHelper.instance;
+
+  // 登録ボタンクリック
+  void _insert() async {
+    var uuid = Uuid();
+    var todoId = uuid.v4();
+
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnId: todoId,
+      DatabaseHelper.columnContent: 'たまごを買う',
+      DatabaseHelper.columnIsChecked: 0,
+    };
+    final id = await dbHelper.insert(row);
+    print('登録しました。id: $id');
+  }
+
+  // 照会ボタンクリック
+  void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    print('全てのデータを照会しました。');
+    allRows.forEach(print);
+  }
+
+  // 更新ボタンクリック
+  void _update() async {
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnId: 1,
+      DatabaseHelper.columnContent: '修正したよ',
+      DatabaseHelper.columnIsChecked: 1,
+    };
+    final rowsAffected = await dbHelper.update(row);
+    print('更新しました。 ID：$rowsAffected ');
+  }
+
+  // 削除ボタンクリック
+  void _delete() async {
+    final id = await dbHelper.queryRowCount();
+    final rowsDeleted = await dbHelper.delete(id!);
+    print('削除しました。 $rowsDeleted ID: $id');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +116,34 @@ class _HomePageState extends State<HomePage> {
                 add();
               },
               child: Text("追加"),
+            ),
+            ElevatedButton(
+              child: Text(
+                'Insert',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _insert,
+            ),
+            ElevatedButton(
+              child: Text(
+                'Query',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _query,
+            ),
+            ElevatedButton(
+              child: Text(
+                'Update',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _update,
+            ),
+            ElevatedButton(
+              child: Text(
+                'Delete',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _delete,
             ),
             // Admob
             FutureBuilder(
@@ -100,7 +175,10 @@ class _HomePageState extends State<HomePage> {
     return Container(
       color: Colors.green,
       child: ListTile(
-        // leading: ,
+        leading: Checkbox(
+          onChanged: (value) {},
+          value: false,
+        ),
         title: TextField(
           controller: item.controller,
           onChanged: (text) {

@@ -15,6 +15,9 @@ dependencies:
   google_mobile_ads: ^3.1.0
   import_sorter: ^4.6.0
   uuid: ^4.2.2
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
