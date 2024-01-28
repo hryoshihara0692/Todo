@@ -6,10 +6,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // Project imports:
 import 'package:todo/components/ad_mob.dart';
-
-import 'package:todo/pages/Item.dart';
-
+import 'package:todo/pages/listtile_item.dart';
 import 'package:todo/database/database_helper.dart';
+import 'package:todo/database/todo_item.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -20,12 +19,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Item> items = [];
+  List<TodoItem> todoItemsList = [];
 
   final AdMob _adMob = AdMob();
 
   @override
   void initState() {
     super.initState();
+    _query();
     _adMob.load();
   }
 
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     _adMob.dispose();
+    print("dispose呼ばれました！！！");
   }
 
   void add() {
@@ -43,22 +45,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void remove(String id) {
-    final removedItem = items.firstWhere((element) => element.id == id);
-    setState(
-      () {
-        items.removeWhere((element) => element.id == id);
-      },
-    );
+  //※いずれ使うかも
+  // void remove(String id) {
+  //   final removedItem = items.firstWhere((element) => element.id == id);
+  //   setState(
+  //     () {
+  //       items.removeWhere((element) => element.id == id);
+  //     },
+  //   );
 
-    // itemのcontrollerをすぐdisposeすると怒られるので
-    // 少し時間をおいてからdipose()
-    Future.delayed(Duration(seconds: 1)).then(
-      (value) {
-        removedItem.dispose();
-      },
-    );
-  }
+  //   // itemのcontrollerをすぐdisposeすると怒られるので
+  //   // 少し時間をおいてからdipose()
+  //   Future.delayed(Duration(seconds: 1)).then(
+  //     (value) {
+  //       removedItem.dispose();
+  //     },
+  //   );
+  // }
 
   // DatabaseHelper クラスのインスタンス取得
   final dbHelper = DatabaseHelper.instance;
@@ -71,136 +74,193 @@ class _HomePageState extends State<HomePage> {
     // row to insert
     Map<String, dynamic> row = {
       DatabaseHelper.columnId: todoId,
-      DatabaseHelper.columnContent: 'たまごを買う',
+      DatabaseHelper.columnContent: '',
       DatabaseHelper.columnIsChecked: 0,
     };
     final id = await dbHelper.insert(row);
     print('登録しました。id: $id');
+    _query();
   }
 
   // 照会ボタンクリック
   void _query() async {
     final allRows = await dbHelper.queryAllRows();
     print('全てのデータを照会しました。');
-    allRows.forEach(print);
+
+    // データベースから取得した行データをTodoItemに変換してリストに追加
+    List<TodoItem> todoItems = allRows.map(
+      (row) {
+        return TodoItem(
+          id: row['_id'],
+          content: row['content'],
+          isChecked: row['isChecked'],
+          controller: TextEditingController(text: row['content']),
+        );
+      },
+    ).toList();
+
+    setState(
+      () {
+        todoItemsList = todoItems;
+      },
+    );
   }
 
-  // 更新ボタンクリック
-  void _update() async {
+  void _updateContent(String id, String content) async {
     Map<String, dynamic> row = {
-      DatabaseHelper.columnId: 1,
-      DatabaseHelper.columnContent: '修正したよ',
-      DatabaseHelper.columnIsChecked: 1,
+      DatabaseHelper.columnId: id,
+      DatabaseHelper.columnContent: content,
+      // DatabaseHelper.columnIsChecked: 1,
     };
     final rowsAffected = await dbHelper.update(row);
     print('更新しました。 ID：$rowsAffected ');
+    _query();
   }
 
   // 削除ボタンクリック
-  void _delete() async {
-    final id = await dbHelper.queryRowCount();
+  void _delete(String id) async {
+    // final id = await dbHelper.queryRowCount();
     final rowsDeleted = await dbHelper.delete(id!);
     print('削除しました。 $rowsDeleted ID: $id');
+    _query();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: ListView(
-          children: [
-            Text(items.toString()),
-            ...items.map((item) => textFieldItem(item)),
-            ElevatedButton(
-              onPressed: () {
-                add();
-              },
-              child: Text("追加"),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+                itemCount: todoItemsList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < todoItemsList.length) {
+                    TodoItem item = todoItemsList[index];
+
+                    return ListTile(
+                      leading: Checkbox(
+                        onChanged: (value) {
+                          // チェックボックスが変更されたときの処理
+                          setState(() {
+                            item.isChecked = value! ? 1 : 0;
+                          });
+                        },
+                        value: item.isChecked == 1,
+                      ),
+                      title: TextField(
+                        controller: item.controller,
+                        // onChanged: (text) {
+                        //   // テキストが変更されたときの処理
+                        //   setState(
+                        //     () {
+                        //       item.content = text;
+                        //     },
+                        //   );
+                        // },
+                        onChanged: (value) {},
+                        // onSubmitted: (text) {
+                        //   print("onSubmmited");
+                        //   // _updateContent(item.id, text);
+                        // },
+                        // onEditingComplete: () {
+                        //   print("onEditingComplete");
+                        // },
+                        onTapOutside: (event) {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          print("==========================================");
+                          print("onTapOutside");
+                          print("==========================================");
+                        },
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          // アイテムを削除する処理
+                          _delete(item.id);
+                        },
+                      ),
+                      dense: true,
+                    );
+                  } else {
+                    return ElevatedButton(
+                      child: Text(
+                        'Insert',
+                        style: TextStyle(fontSize: 35),
+                      ),
+                      onPressed: _insert,
+                    );
+                  }
+                }),
+          ),
+          ElevatedButton(
+            child: Text(
+              'Query',
+              style: TextStyle(fontSize: 35),
             ),
-            ElevatedButton(
-              child: Text(
-                'Insert',
-                style: TextStyle(fontSize: 35),
-              ),
-              onPressed: _insert,
+            onPressed: _query,
+          ),
+          ElevatedButton(
+            child: Text(
+              'Insert',
+              style: TextStyle(fontSize: 35),
             ),
-            ElevatedButton(
-              child: Text(
-                'Query',
-                style: TextStyle(fontSize: 35),
-              ),
-              onPressed: _query,
-            ),
-            ElevatedButton(
-              child: Text(
-                'Update',
-                style: TextStyle(fontSize: 35),
-              ),
-              onPressed: _update,
-            ),
-            ElevatedButton(
-              child: Text(
-                'Delete',
-                style: TextStyle(fontSize: 35),
-              ),
-              onPressed: _delete,
-            ),
-            // Admob
-            FutureBuilder(
-              future: AdSize.getAnchoredAdaptiveBannerAdSize(
-                  Orientation.portrait,
-                  MediaQuery.of(context).size.width.truncate()),
-              builder: (BuildContext context,
-                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: _adMob.getAdBanner(),
-                  );
-                } else {
-                  return Container(
-                    height: _adMob.getAdBannerHeight(),
-                    color: Colors.white,
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+            onPressed: _insert,
+          ),
+          // Admob
+          FutureBuilder(
+            future: AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait,
+                MediaQuery.of(context).size.width.truncate()),
+            builder: (BuildContext context,
+                AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+              if (snapshot.hasData) {
+                return SizedBox(
+                  width: double.infinity,
+                  child: _adMob.getAdBanner(),
+                );
+              } else {
+                return Container(
+                  height: _adMob.getAdBannerHeight(),
+                  color: Colors.white,
+                );
+              }
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget textFieldItem(Item item) {
-    return Container(
-      color: Colors.green,
-      child: ListTile(
-        leading: Checkbox(
-          onChanged: (value) {},
-          value: false,
-        ),
-        title: TextField(
-          controller: item.controller,
-          onChanged: (text) {
-            setState(
-              () {
-                items = items
-                    .map((e) => e.id == item.id ? item.change(text) : e)
-                    .toList();
-              },
-            );
-          },
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            remove(item.id);
-          },
-        ),
-        dense: true,
-      ),
-    );
-  }
+  // //※いらない
+  // Widget textFieldItem(Item item) {
+  //   return Container(
+  //     color: Colors.green,
+  //     child: ListTile(
+  //       leading: Checkbox(
+  //         onChanged: (value) {},
+  //         value: false,
+  //       ),
+  //       title: TextField(
+  //         controller: item.controller,
+  //         onChanged: (text) {
+  //           setState(
+  //             () {
+  //               items = items
+  //                   .map((e) => e.id == item.id ? item.change(text) : e)
+  //                   .toList();
+  //             },
+  //           );
+  //         },
+  //       ),
+  //       trailing: IconButton(
+  //         icon: Icon(Icons.close),
+  //         onPressed: () {
+  //           remove(item.id);
+  //         },
+  //       ),
+  //       dense: true,
+  //     ),
+  //   );
+  // }
 }
 
 //==============================================================================

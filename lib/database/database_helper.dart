@@ -63,7 +63,7 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId TEXT PRIMARY KEY,
-            $columnContent TEXT NOT NULL,
+            $columnContent TEXT,
             $columnIsChecked INTEGER NOT NULL
           )
           ''');
@@ -95,9 +95,10 @@ class DatabaseHelper {
   }
 
   //　削除処理
-   Future<int> delete(int id) async {
+   Future<int> delete(String id) async {
     Database? db = await instance.database;
-    // return await db!.delete(table, where: '$columnId = ?', whereArgs: [id]);
-    return await db!.delete(table);
+    return await db!.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    //※全削除処理
+    // return await db!.delete(table);
   }
 }
