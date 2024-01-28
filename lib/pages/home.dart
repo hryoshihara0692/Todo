@@ -127,105 +127,113 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-                itemCount: todoItemsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < todoItemsList.length) {
-                    TodoItem item = todoItemsList[index];
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                  itemCount: todoItemsList.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < todoItemsList.length) {
+                      TodoItem item = todoItemsList[index];
 
-                    return ListTile(
-                      leading: Checkbox(
-                        onChanged: (value) {
-                          // チェックボックスが変更されたときの処理
-                          setState(() {
-                            item.isChecked = value! ? 1 : 0;
-                          });
-                        },
-                        value: item.isChecked == 1,
-                      ),
-                      title: TextField(
-                        controller: item.controller,
-                        // onChanged: (text) {
-                        //   // テキストが変更されたときの処理
-                        //   setState(
-                        //     () {
-                        //       item.content = text;
-                        //     },
-                        //   );
-                        // },
-                        onChanged: (value) {},
-                        // onSubmitted: (text) {
-                        //   print("onSubmmited");
-                        //   // _updateContent(item.id, text);
-                        // },
-                        // onEditingComplete: () {
-                        //   print("onEditingComplete");
-                        // },
-                        onTapOutside: (event) {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          print("==========================================");
-                          print("onTapOutside");
-                          print("==========================================");
-                        },
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          // アイテムを削除する処理
-                          _delete(item.id);
-                        },
-                      ),
-                      dense: true,
-                    );
-                  } else {
-                    return ElevatedButton(
-                      child: Text(
-                        'Insert',
-                        style: TextStyle(fontSize: 35),
-                      ),
-                      onPressed: _insert,
-                    );
-                  }
-                }),
-          ),
-          ElevatedButton(
-            child: Text(
-              'Query',
-              style: TextStyle(fontSize: 35),
+                      return ListTile(
+                        leading: Checkbox(
+                          onChanged: (value) {
+                            // チェックボックスが変更されたときの処理
+                            setState(() {
+                              item.isChecked = value! ? 1 : 0;
+                            });
+                          },
+                          value: item.isChecked == 1,
+                        ),
+                        title: TextField(
+                          controller: item.controller,
+                          // onChanged: (text) {
+                          //   // テキストが変更されたときの処理
+                          //   setState(
+                          //     () {
+                          //       item.content = text;
+                          //     },
+                          //   );
+                          // },
+                          onChanged: (value) {},
+                          // onSubmitted: (text) {
+                          //   print("onSubmmited");
+                          //   // _updateContent(item.id, text);
+                          // },
+                          onEditingComplete: () {
+                            print("==========================================");
+                            print("onEditingComplete");
+                            print("==========================================");
+                            _updateContent(item.id, item.controller.text);
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          },
+                          onTapOutside: (event) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            print("==========================================");
+                            print("onTapOutside");
+                            print("==========================================");
+                          },
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            // アイテムを削除する処理
+                            _delete(item.id);
+                          },
+                        ),
+                        dense: true,
+                      );
+                    } else {
+                      return ElevatedButton(
+                        child: Text(
+                          'Insert',
+                          style: TextStyle(fontSize: 35),
+                        ),
+                        onPressed: _insert,
+                      );
+                    }
+                  }),
             ),
-            onPressed: _query,
-          ),
-          ElevatedButton(
-            child: Text(
-              'Insert',
-              style: TextStyle(fontSize: 35),
+            ElevatedButton(
+              child: Text(
+                'Query',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _query,
             ),
-            onPressed: _insert,
-          ),
-          // Admob
-          FutureBuilder(
-            future: AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait,
-                MediaQuery.of(context).size.width.truncate()),
-            builder: (BuildContext context,
-                AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-              if (snapshot.hasData) {
-                return SizedBox(
-                  width: double.infinity,
-                  child: _adMob.getAdBanner(),
-                );
-              } else {
-                return Container(
-                  height: _adMob.getAdBannerHeight(),
-                  color: Colors.white,
-                );
-              }
-            },
-          ),
-        ],
+            ElevatedButton(
+              child: Text(
+                'Insert',
+                style: TextStyle(fontSize: 35),
+              ),
+              onPressed: _insert,
+            ),
+            // Admob
+            FutureBuilder(
+              future: AdSize.getAnchoredAdaptiveBannerAdSize(
+                  Orientation.portrait,
+                  MediaQuery.of(context).size.width.truncate()),
+              builder: (BuildContext context,
+                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: _adMob.getAdBanner(),
+                  );
+                } else {
+                  return Container(
+                    height: _adMob.getAdBannerHeight(),
+                    color: Colors.white,
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
