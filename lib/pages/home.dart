@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
   // 削除ボタンクリック
   void _delete(String id) async {
     // final id = await dbHelper.queryRowCount();
-    final rowsDeleted = await dbHelper.delete(id!);
+    final rowsDeleted = await dbHelper.delete(id);
     print('削除しました。 $rowsDeleted ID: $id');
     _query();
   }

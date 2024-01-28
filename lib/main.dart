@@ -7,7 +7,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
-import 'package:todo/pages/initial.dart';
 import 'firebase_options.dart';
 
 void main() async {
