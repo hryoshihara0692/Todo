@@ -6,5 +6,10 @@ class TodoItem {
   int isChecked;
   final TextEditingController controller;
 
-  TodoItem({required this.id, required this.content, required this.isChecked, required this.controller});
+  TodoItem({
+    required this.id,
+    required this.content,
+    required this.isChecked,
+    required this.controller,
+  });
 }
