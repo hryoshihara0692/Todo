@@ -8,8 +8,11 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/database/database_helper.dart';
 import 'package:todo/database/todo_item.dart';
+import 'package:todo/widgets/side_menu.dart';
 
 import 'package:uuid/uuid.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,7 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // List<Item> items = [];
   List<TodoItem> todoItemsList = [];
 
   final AdMob _adMob = AdMob();
@@ -25,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _query();
+    _queryALL();
     _adMob.load();
   }
 
@@ -33,11 +35,12 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     _adMob.dispose();
-    print("dispose呼ばれました！！！");
   }
 
   // DatabaseHelper クラスのインスタンス取得
   final dbHelper = DatabaseHelper.instance;
+
+  final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
 
   // 登録ボタンクリック
   void _insert() async {
@@ -47,33 +50,35 @@ class _HomePageState extends State<HomePage> {
     // row to insert
     Map<String, dynamic> row = {
       DatabaseHelper.columnId: todoId,
+      DatabaseHelper.columnTodoListId: uid,
       DatabaseHelper.columnContent: '',
       DatabaseHelper.columnIsChecked: 0,
     };
     final id = await dbHelper.insert(row);
     print('登録しました。id: $id');
-    _query();
+    _queryALL();
   }
 
   // 照会ボタンクリック
-  void _query() async {
+  void _queryALL() async {
     final allRows = await dbHelper.queryAllRows();
     print('全てのデータを照会しました。');
 
     // データベースから取得した行データをTodoItemに変換してリストに追加
     List<TodoItem> tempTodoItemList = allRows.map(
       (row) {
+        print(row);
         return TodoItem(
           id: row['_id'],
+          todoListId: row['todoListId'],
           content: row['content'],
           isChecked: row['isChecked'],
           controller: TextEditingController(text: row['content']),
-          // focusNode: FocusNode(),
         );
       },
     ).toList();
 
-    if(tempTodoItemList.isEmpty || tempTodoItemList.length == 0){
+    if(tempTodoItemList.isEmpty){
       _insert();
     }
 
@@ -113,7 +118,7 @@ class _HomePageState extends State<HomePage> {
     // final id = await dbHelper.queryRowCount();
     final rowsDeleted = await dbHelper.delete(id);
     print('削除しました。 $rowsDeleted ID: $id');
-    _query();
+    _queryALL();
   }
 
   @override
@@ -133,7 +138,7 @@ class _HomePageState extends State<HomePage> {
             //   ),
             // ),
           ),
-          // drawer: ,
+          drawer: SideMenu(),
           backgroundColor: Color.fromARGB(255, 122, 175, 228),
           body: Column(
             children: [
@@ -149,12 +154,9 @@ class _HomePageState extends State<HomePage> {
                       itemCount: todoItemsList.length,
                       itemBuilder: (context, index) {
                         TodoItem item = todoItemsList[index];
-                        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                        print(todoItemsList.length);
-                        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                        if(todoItemsList.isEmpty || todoItemsList.length == 0) {
-                          _insert();
-                        }
+                        // print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        // print(item);
+                        // print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         //チェックボックス外れてる＝普通のテキストボックス
                         if (item.isChecked == 0) {
                           return Material(
@@ -219,6 +221,7 @@ class _HomePageState extends State<HomePage> {
                               elevation: 10,
                               child: ListTile(
                                 tileColor: Color.fromARGB(255, 141, 141, 141),
+                                contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
                                 leading: Checkbox(
                                   onChanged: (value) {
                                     FocusScope.of(context).requestFocus(FocusNode());
@@ -282,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                   'Query',
                   style: TextStyle(fontSize: 35),
                 ),
-                onPressed: _query,
+                onPressed: _queryALL,
               ),
               ElevatedButton(
                 child: Text(

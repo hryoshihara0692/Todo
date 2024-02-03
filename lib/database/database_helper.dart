@@ -16,8 +16,9 @@ class DatabaseHelper {
   static final table = 'Todo'; // テーブル名
 
   static final columnId = '_id'; // カラム名：ID
-  static final columnContent = 'content'; // カラム名:Name
-  static final columnIsChecked = 'isChecked'; // カラム名：age
+  static final columnTodoListId = 'todoListId'; // カラム名：TodoListID
+  static final columnContent = 'content'; // カラム名:Content
+  static final columnIsChecked = 'isChecked'; // カラム名：isChecked
 
   // DatabaseHelper クラスを定義
   DatabaseHelper._privateConstructor();
@@ -63,6 +64,7 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId TEXT PRIMARY KEY,
+            $columnTodoListId TEXT,
             $columnContent TEXT,
             $columnIsChecked INTEGER NOT NULL
           )
