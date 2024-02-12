@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TodoItem {
   String id;
-  String todoListId;
+  String? todoListId;
   String content;
   int isChecked;
   final TextEditingController controller;

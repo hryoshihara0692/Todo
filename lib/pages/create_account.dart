@@ -13,9 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
+import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/round_button.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAccountPage extends StatefulWidget {
   // const AccountRegistrationPage({super.key});
@@ -130,25 +132,26 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ),
             ),
-            FutureBuilder(
-              future: AdSize.getAnchoredAdaptiveBannerAdSize(
-                  Orientation.portrait,
-                  MediaQuery.of(context).size.width.truncate()),
-              builder: (BuildContext context,
-                  AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: _adMob.getAdBanner(),
-                  );
-                } else {
-                  return Container(
-                    height: _adMob.getAdBannerHeight(),
-                    color: Colors.white,
-                  );
-                }
-              },
-            ),
+            AdMobBanner(),
+            // FutureBuilder(
+            //   future: AdSize.getAnchoredAdaptiveBannerAdSize(
+            //       Orientation.portrait,
+            //       MediaQuery.of(context).size.width.truncate()),
+            //   builder: (BuildContext context,
+            //       AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
+            //     if (snapshot.hasData) {
+            //       return SizedBox(
+            //         width: double.infinity,
+            //         child: _adMob.getAdBanner(),
+            //       );
+            //     } else {
+            //       return Container(
+            //         height: _adMob.getAdBannerHeight(),
+            //         color: Colors.white,
+            //       );
+            //     }
+            //   },
+            // ),
           ],
         ),
       ),
@@ -163,6 +166,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         email: id,
         password: pass,
       );
+
+      final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
+      Map<String, dynamic> data = <String, dynamic>{};
+      await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
 
       // Navigator.pushNamed(context, '/');
       // context.push('/');
