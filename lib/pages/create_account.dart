@@ -1,26 +1,12 @@
-// import 'package:flutter/material.dart';
-
-// class CreateAccount extends StatelessWidget {
-//   const CreateAccount({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text("login");
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/round_button.dart';
-// import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAccountPage extends StatefulWidget {
-  // const AccountRegistrationPage({super.key});
   const CreateAccountPage({super.key});
 
   @override
@@ -65,9 +51,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               margin: const EdgeInsets.fromLTRB(0, 100, 0, 100),
               child: const Center(child: Text('Flex 1')),
             ),
-            // Container(
-            //   child: TextField(),
-            // ),
             Expanded(
               child: Container(
                 color: Colors.pink,
@@ -110,7 +93,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           buttonName: 'キャンセル',
                           buttonWidth: 150,
                           onPressed: () {
-                            // context.push('/');
                             Navigator.pop(context);
                           },
                         ),
@@ -121,7 +103,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           buttonName: 'アカウント登録する',
                           buttonWidth: 150,
                           onPressed: () {
-                            // context.push('/');
                             _createAccount(context, _idController.text,
                                 _passController.text);
                           },
@@ -133,25 +114,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
             ),
             AdMobBanner(),
-            // FutureBuilder(
-            //   future: AdSize.getAnchoredAdaptiveBannerAdSize(
-            //       Orientation.portrait,
-            //       MediaQuery.of(context).size.width.truncate()),
-            //   builder: (BuildContext context,
-            //       AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-            //     if (snapshot.hasData) {
-            //       return SizedBox(
-            //         width: double.infinity,
-            //         child: _adMob.getAdBanner(),
-            //       );
-            //     } else {
-            //       return Container(
-            //         height: _adMob.getAdBannerHeight(),
-            //         color: Colors.white,
-            //       );
-            //     }
-            //   },
-            // ),
           ],
         ),
       ),
@@ -160,19 +122,26 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _createAccount(BuildContext context, String id, String pass) async {
     try {
-      /// credential にはアカウント情報が記録される
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: id,
         password: pass,
       );
 
-      final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
-      Map<String, dynamic> data = <String, dynamic>{};
-      await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+      // ユーザー情報の再取得（UIDを取得するため）
+      await credential.user?.reload();
 
-      // Navigator.pushNamed(context, '/');
-      // context.push('/');
+      // 更新されたユーザー情報を再度取得
+      final updatedUser = FirebaseAuth.instance.currentUser;
+      final uid = updatedUser?.uid;
+
+      if (uid != null) {
+        Map<String, dynamic> data = {uid: 'マイリスト'};
+        await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+      } else {
+        //TODO UIDが取得できない場合の処理
+      }
+
       Navigator.pop(context);
     }
 

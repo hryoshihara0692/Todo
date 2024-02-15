@@ -1,12 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:todo/database/todo_data_service.dart';
-import 'package:todo/database/todo_item.dart';
 import 'package:todo/database/user_data_service.dart';
 
+// class CategoryDropdown extends StatefulWidget {
+//   CategoryDropdown({Key? key}) : super(key: key);
+
+//   @override
+//   _CategoryDropdownState createState() => _CategoryDropdownState();
+// }
 class CategoryDropdown extends StatefulWidget {
-  CategoryDropdown({Key? key}) : super(key: key);
+  final void Function(String?) onSelectTodoListId; // コールバック関数の定義
+
+  CategoryDropdown({Key? key, required this.onSelectTodoListId})
+      : super(key: key);
 
   @override
   _CategoryDropdownState createState() => _CategoryDropdownState();
@@ -32,7 +38,8 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
             final userData = snapshot.data;
             if (userData != null) {
               // userDataの各エントリをDropdownMenuItemに変換する
-              List<DropdownMenuItem<String>> dropdownItems = userData.entries.map((entry) {
+              List<DropdownMenuItem<String>> dropdownItems =
+                  userData.entries.map((entry) {
                 final String value = entry.key;
                 final String text = entry.value;
                 return DropdownMenuItem<String>(
@@ -43,7 +50,8 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
 
               // 初期値を設定する
               if (selectedTodoListId == null) {
-                selectedTodoListId = userData.keys.first;
+                // selectedTodoListId = userData.keys.first;
+                selectedTodoListId = uid;
               }
 
               return DropdownButton<String>(
@@ -52,6 +60,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
                 onChanged: (String? selectedValue) {
                   setState(() {
                     selectedTodoListId = selectedValue; // 選択された値を保持する
+                    widget.onSelectTodoListId(selectedValue); // コールバック関数を呼び出す
                   });
                 },
               );
