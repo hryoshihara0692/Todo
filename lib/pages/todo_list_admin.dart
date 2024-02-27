@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:todo/pages/home.dart';
 import 'package:todo/screen_pod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/round_button.dart';
@@ -56,9 +57,6 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
               margin: const EdgeInsets.fromLTRB(0, 100, 0, 100),
               child: const Center(child: Text('Flex 1')),
             ),
-            // Container(
-            //   child: TextField(),
-            // ),
             Expanded(
               child: Container(
                 color: Colors.pink,
@@ -79,18 +77,6 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
                     const SizedBox(
                       height: 25.0,
                     ),
-                    // SizedBox(
-                    //   height: 50,
-                    //   child: TextField(
-                    //     controller: _passController,
-                    //     decoration: const InputDecoration(
-                    //       border: OutlineInputBorder(
-                    //           borderSide: BorderSide(width: 3)),
-                    //       hintText: 'パスワード',
-                    //     ),
-                    //     obscureText: true,
-                    //   ),
-                    // ),
                     const SizedBox(
                       height: 25.0,
                     ),
@@ -101,7 +87,6 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
                           buttonName: 'キャンセル',
                           buttonWidth: 150,
                           onPressed: () {
-                            // context.push('/');
                             Navigator.pop(context);
                           },
                         ),
@@ -112,11 +97,14 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
                           buttonName: 'TodoList登録',
                           buttonWidth: 150,
                           onPressed: () {
-                            // context.push('/');
-                            // _createAccount(context, _todoListNameController.text,
-                            //     _passController.text);
                             createTodoList(_todoListNameController.text, uid);
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => HomePage(),
+                              ),
+                            );
                           },
                         ),
                       ],
@@ -126,25 +114,6 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
               ),
             ),
             AdMobBanner(),
-            // FutureBuilder(
-            //   future: AdSize.getAnchoredAdaptiveBannerAdSize(
-            //       Orientation.portrait,
-            //       MediaQuery.of(context).size.width.truncate()),
-            //   builder: (BuildContext context,
-            //       AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-            //     if (snapshot.hasData) {
-            //       return SizedBox(
-            //         width: double.infinity,
-            //         child: _adMob.getAdBanner(),
-            //       );
-            //     } else {
-            //       return Container(
-            //         height: _adMob.getAdBannerHeight(),
-            //         color: Colors.white,
-            //       );
-            //     }
-            //   },
-            // ),
           ],
         ),
       ),
@@ -161,8 +130,9 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
     DocumentReference docRef = users.doc(uid);
 
     // 追加するデータ
+    String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
     Map<String, dynamic> newData = {
-      todoListId: todoListName, // 新しいフィールドと値
+      date + '-' + todoListId: todoListName, // 新しいフィールドと値
     };
 
     // ドキュメントを更新（既存のデータとマージ）

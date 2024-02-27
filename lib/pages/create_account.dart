@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:todo/pages/home.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/admob_banner.dart';
@@ -37,23 +39,57 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     final designW = screen.designW(200);
     final designH = screen.designH(200);
 
+    String selectedRadioButton = 'button1';
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              width: designW,
-              // height: designH,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.blue,
+            Expanded(
+              child: Container(
+                width: designW,
+                // height: designH,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                ),
+                // margin: const EdgeInsets.fromLTRB(0, 100, 0, 100),
+                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: const Center(child: Text('Flex 1')),
               ),
-              margin: const EdgeInsets.fromLTRB(0, 100, 0, 100),
-              child: const Center(child: Text('Flex 1')),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: RadioListTile(
+                    title: const Text('ボタン1'),
+                    value: 'button1',
+                    groupValue: selectedRadioButton,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRadioButton = value.toString();
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: RadioListTile(
+                    title: const Text('ボタン2'),
+                    value: 'button2',
+                    groupValue: selectedRadioButton,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRadioButton = value.toString();
+                      });
+                    },
+                  ),
+                ),
+                // 他のラジオボタンがあればここに追加
+              ],
             ),
             Expanded(
               child: Container(
-                color: Colors.pink,
+                color: const Color.fromARGB(255, 244, 125, 164),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -105,6 +141,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           onPressed: () {
                             _createAccount(context, _idController.text,
                                 _passController.text);
+                            // Navigator.pushReplacement(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) => HomePage(),
+                            //   ),
+                            // );
                           },
                         ),
                       ],
@@ -122,11 +164,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _createAccount(BuildContext context, String id, String pass) async {
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: id,
-        password: pass,
-      );
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: id, password: pass);
 
       // ユーザー情報の再取得（UIDを取得するため）
       await credential.user?.reload();
@@ -136,23 +175,31 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       final uid = updatedUser?.uid;
 
       if (uid != null) {
-        Map<String, dynamic> data = {uid: 'マイリスト'};
+        String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+        Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
         await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+
+        // ログイン状態の確認と遷移
+        if (FirebaseAuth.instance.currentUser != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => HomePage(),
+            ),
+          );
+        }
       } else {
         //TODO UIDが取得できない場合の処理
       }
-
-      Navigator.pop(context);
     }
-
-    /// アカウントに失敗した場合のエラー処理
+    // アカウントに失敗した場合のエラー処理
     on FirebaseAuthException catch (e) {
-      /// パスワードが弱い場合
+      // パスワードが弱い場合
       if (e.code == 'weak-password') {
         print('パスワードが弱いです');
       }
 
-      /// メールアドレスが既に使用中の場合
+      // メールアドレスが既に使用中の場合
       else if (e.code == 'email-already-in-use') {
         print('すでに使用されているメールアドレスです');
       }
@@ -160,8 +207,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       else if (e.code == 'invalid-email') {
         print('メールアドレスが有効ではありません。');
       }
-
-      /// その他エラー
+      // その他エラー
       else {
         print('アカウント作成エラー');
       }
@@ -169,4 +215,53 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       print(e);
     }
   }
+
+  // void _createAccount(BuildContext context, String id, String pass) async {
+  //   try {
+  //     final credential =
+  //         await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  //       email: id,
+  //       password: pass,
+  //     );
+
+  //     // ユーザー情報の再取得（UIDを取得するため）
+  //     await credential.user?.reload();
+
+  //     // 更新されたユーザー情報を再度取得
+  //     final updatedUser = FirebaseAuth.instance.currentUser;
+  //     final uid = updatedUser?.uid;
+
+  //     if (uid != null) {
+  //       String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+  //       Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
+  //       await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+  //     } else {
+  //       //TODO UIDが取得できない場合の処理
+  //     }
+  //   }
+
+  //   /// アカウントに失敗した場合のエラー処理
+  //   on FirebaseAuthException catch (e) {
+  //     /// パスワードが弱い場合
+  //     if (e.code == 'weak-password') {
+  //       print('パスワードが弱いです');
+  //     }
+
+  //     /// メールアドレスが既に使用中の場合
+  //     else if (e.code == 'email-already-in-use') {
+  //       print('すでに使用されているメールアドレスです');
+  //     }
+  //     // メールアドレスがおかしい場合
+  //     else if (e.code == 'invalid-email') {
+  //       print('メールアドレスが有効ではありません。');
+  //     }
+
+  //     /// その他エラー
+  //     else {
+  //       print('アカウント作成エラー');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 }

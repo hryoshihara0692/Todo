@@ -5,6 +5,8 @@ class TodoItem {
   String? todoListId;
   String content;
   int isChecked;
+  DateTime createdAt;
+  DateTime updatedAt;
   final TextEditingController controller;
 
   TodoItem({
@@ -12,6 +14,8 @@ class TodoItem {
     required this.todoListId,
     required this.content,
     required this.isChecked,
+    required this.createdAt,
+    required this.updatedAt,
     required this.controller,
   });
 }

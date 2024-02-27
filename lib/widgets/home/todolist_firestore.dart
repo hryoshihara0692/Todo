@@ -3,11 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:todo/database/todo_data_service.dart';
 import 'package:todo/database/todo_item.dart';
 import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TodoListFirestore extends StatefulWidget {
   final String todoListId;
+  final String sortColumnTodoValue;
+  final bool descendingTodoValue;
 
-  TodoListFirestore({Key? key, required this.todoListId}) : super(key: key);
+  TodoListFirestore({
+    Key? key,
+    required this.todoListId,
+    required this.sortColumnTodoValue,
+    required this.descendingTodoValue,
+  }) : super(key: key);
 
   @override
   _TodoListFirestoreState createState() => _TodoListFirestoreState();
@@ -28,24 +36,29 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> row = {
-      "TodoListID": widget.todoListId,
-      "Content": '',
-      "isChecked": 0,
-    };
+    if (widget.todoListId == null || widget.todoListId == '') {
+      return Text('${widget.todoListId}ドロップダウンリストで選択しているIDを受け取れていません');
+    }
     return StreamBuilder<QuerySnapshot>(
-      stream: getStream(widget.todoListId),
+      stream: getStream(widget.todoListId, widget.sortColumnTodoValue, widget.descendingTodoValue),
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot> snapshot,
       ) {
         if (snapshot.data == null) {
+          //TODO 初回起動時にここに入ってきてる
           return const Text('empty');
-
         } else if (snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
           var uuIdForTodo = uuid.v4();
+          Map<String, dynamic> row = {
+            "TodoListID": widget.todoListId,
+            "Content": '',
+            "isChecked": 0,
+            "CreatedAt": Timestamp.fromDate(DateTime.now()),
+            "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+          };
 
           TodoDataService.createTodoData(uuIdForTodo, row);
 
@@ -71,6 +84,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                           todoListId: documents[index]['TodoListID'],
                           content: documents[index]['Content'],
                           isChecked: documents[index]['isChecked'],
+                          createdAt: documents[index]['CreatedAt'].toDate(),
+                          updatedAt: documents[index]['UpdatedAt'].toDate(),
                           controller: TextEditingController(
                               text: documents[index]['Content']),
                         );
@@ -78,7 +93,6 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                           color: item.isChecked == 1
                               ? Color.fromARGB(255, 141, 141, 141)
                               : Colors.white,
-
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: Checkbox(
@@ -132,6 +146,13 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                   //UUID生成
                   var uuid = Uuid();
                   var uuIdForTodo = uuid.v4();
+                  Map<String, dynamic> row = {
+                    "TodoListID": widget.todoListId,
+                    "Content": '',
+                    "isChecked": 0,
+                    "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                    "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                  };
 
                   TodoDataService.createTodoData(uuIdForTodo, row);
                 },
@@ -144,10 +165,20 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
     );
   }
 
-  Stream<QuerySnapshot> getStream(String todoListId) {
+  /**
+   * todoListId : 対象TodoListのID,
+   * sortColumnTodo : ソートするカラム,
+   * descendingTodo : 昇順(false),降順(true)
+   */
+  Stream<QuerySnapshot> getStream(String todoListId, String sortColumnTodo, bool descendingTodo) {
+  // Stream<QuerySnapshot> getStream(String todoListId) {
     final db = FirebaseFirestore.instance;
-    final collectionRef =
-        db.collection('TODO').where('TodoListID', isEqualTo: todoListId);
+    final collectionRef = db
+        .collection('TODO')
+        .where('TodoListID', isEqualTo: todoListId)
+        // .orderBy(sortColumnTodo, descending: descendingTodo)
+        // .orderBy('CreatedAt', descending: false);
+        .orderBy(sortColumnTodo, descending: descendingTodo);
     return collectionRef.snapshots();
   }
 }

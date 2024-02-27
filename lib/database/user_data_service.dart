@@ -13,7 +13,6 @@ class UserDataService {
       if (userDoc.exists) {
         // ドキュメント内のデータを取得
         Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>;
-        print(userData);
 
         //空の場合、チェックしてもしなくても空を返すならチェック不要では…
         if (userData.isNotEmpty) {

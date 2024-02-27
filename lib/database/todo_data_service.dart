@@ -45,7 +45,10 @@ class TodoDataService {
     FirebaseFirestore.instance
         .collection('TODO')
         .doc(documentId)
-        .update({'Content': content}).then((_) {
+        .update({
+          'Content': content,
+          'UpdatedAt': Timestamp.fromDate(DateTime.now()),
+        }).then((_) {
       // 更新が成功した場合の処理
       print('Field updated successfully.');
     }).catchError((error) {
@@ -58,7 +61,10 @@ class TodoDataService {
     FirebaseFirestore.instance
         .collection('TODO')
         .doc(documentId)
-        .update({'isChecked': isChecked}).then((_) {
+        .update({
+          'isChecked': isChecked,
+          'UpdatedAt': Timestamp.fromDate(DateTime.now()),
+        }).then((_) {
       // 更新が成功した場合の処理
       print('Field updated successfully.');
     }).catchError((error) {

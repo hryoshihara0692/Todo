@@ -32,8 +32,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: HomePage(),
-      // home: const HomePage(title: 'Admob Demo'),
-      // home: const InitialPage(title: 'Admob Demo'),
     );
   }
 }
