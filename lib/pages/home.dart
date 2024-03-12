@@ -86,12 +86,15 @@ class _HomePageState extends State<HomePage> {
     }
     // ユーザーデータを取得して、selectedTodoListIdを設定
     if (prefs.containsKey(selectedTodoListIdSPKeyName)) {
+      print('前回選択していたドロップダウン情報(selectedTodoListIdSPKeyName)があります');
       setState(() {
         final selectedTodoListId = prefs.getString(selectedTodoListIdSPKeyName);
         _selectedTodoListId = selectedTodoListId!;
       });
     } else {
+      print('選択していたドロップダウン情報がないため、uid($uid)でマイリストを表示する');
       final userData = await UserDataService.getUserData(uid!);
+      print('userData: $userData');
       setState(() {
         _selectedTodoListId = userData.keys.firstWhere(
           (key) => key.contains(uid!),

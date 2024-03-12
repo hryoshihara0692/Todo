@@ -22,7 +22,6 @@ class TodoListFirestore extends StatefulWidget {
 }
 
 class _TodoListFirestoreState extends State<TodoListFirestore> {
-
   @override
   void initState() {
     super.initState();
@@ -40,15 +39,17 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
       return Text('${widget.todoListId}ドロップダウンリストで選択しているIDを受け取れていません');
     }
     return StreamBuilder<QuerySnapshot>(
-      stream: getStream(widget.todoListId, widget.sortColumnTodoValue, widget.descendingTodoValue),
+      stream: getStream(widget.todoListId, widget.sortColumnTodoValue,
+          widget.descendingTodoValue),
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot> snapshot,
       ) {
-        if (snapshot.data == null) {
-          //TODO 初回起動時にここに入ってきてる
-          return const Text('empty');
-        } else if (snapshot.data!.docs.isEmpty) {
+        // if (snapshot.data == null) {
+        //   //TODO 初回起動時にここに入ってきてる
+        //   return const Text('empty');
+        // } else if (snapshot.data!.docs.isEmpty) {
+        if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
           var uuIdForTodo = uuid.v4();
@@ -62,9 +63,16 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
 
           TodoDataService.createTodoData(uuIdForTodo, row);
 
+          ///
+          /// ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+          /// バグ2024031201
+          /// 下のreturnに来る可能性を潰す
+          /// ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+          ///
           return const Text('empty');
         }
         final documents = snapshot.data!.docs;
+        bool hasEmptyTodo = documents.any((doc) => doc['Content'].isEmpty);
 
         return Expanded(
           child: Column(
@@ -143,18 +151,43 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  //UUID生成
-                  var uuid = Uuid();
-                  var uuIdForTodo = uuid.v4();
-                  Map<String, dynamic> row = {
-                    "TodoListID": widget.todoListId,
-                    "Content": '',
-                    "isChecked": 0,
-                    "CreatedAt": Timestamp.fromDate(DateTime.now()),
-                    "UpdatedAt": Timestamp.fromDate(DateTime.now()),
-                  };
+                  ///
+                  /// 空Todoの有無をチェック
+                  ///
+                  if (hasEmptyTodo) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('空のTodoがすでにあります'),
+                          content: Text('もともとある方をつかってください〜'),
+                          actions: [
+                            // TextButton(
+                            //   child: Text("Cancel"),
+                            //   onPressed: () => Navigator.pop(context),
+                            // ),
+                            TextButton(
+                              child: Text("OK"),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    //UUID生成
+                    var uuid = Uuid();
+                    var uuIdForTodo = uuid.v4();
+                    Map<String, dynamic> row = {
+                      "TodoListID": widget.todoListId,
+                      "Content": '',
+                      "isChecked": 0,
+                      "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                      "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                    };
 
-                  TodoDataService.createTodoData(uuIdForTodo, row);
+                    TodoDataService.createTodoData(uuIdForTodo, row);
+                  }
                 },
                 child: Text('追加'),
               ),
@@ -170,8 +203,12 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
    * sortColumnTodo : ソートするカラム,
    * descendingTodo : 昇順(false),降順(true)
    */
-  Stream<QuerySnapshot> getStream(String todoListId, String sortColumnTodo, bool descendingTodo) {
-  // Stream<QuerySnapshot> getStream(String todoListId) {
+  Stream<QuerySnapshot> getStream(
+      String todoListId, String sortColumnTodo, bool descendingTodo) {
+    // Stream<QuerySnapshot> getStream(String todoListId) {
+    // print('------------------------------');
+    // print(todoListId);
+    // print('------------------------------');
     final db = FirebaseFirestore.instance;
     final collectionRef = db
         .collection('TODO')
