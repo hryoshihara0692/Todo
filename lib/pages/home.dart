@@ -136,115 +136,118 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: uid != null
-              ? FutureBuilder<Map<String, dynamic>>(
-                  future: UserDataService.getUserData(uid!),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // データ取得中の表示
-                    } else if (snapshot.hasError) {
-                      return Text('エラー: ${snapshot.error}');
-                    } else {
-                      final userData = snapshot.data;
-                      if (userData != null) {
-                        Map<String, dynamic> sortedUserData;
-
-                        if (_sortTypeTodoListValue == 'CreatedAt') {
-                          if(_descendingTodoListValue) {
-                            sortedUserData = sortedMapByKeyDescending(userData);
-                          } else {
-                            sortedUserData = sortedMapByKeyAscending(userData);
-                          }
-                        } else if (_sortTypeTodoListValue == 'Name') {
-                          if(_descendingTodoListValue) {
-                            sortedUserData = sortedMapByValueDescending(userData);
-                          } else {
-                            sortedUserData = sortedMapByValueAscending(userData);
-                          }
-                        } else {
-                          sortedUserData = userData;
-                        }
-
-                        // userDataの各エントリをDropdownMenuItemに変換する
-                        List<DropdownMenuItem<String>> dropdownItems =
-                            sortedUserData.entries.map((entry) {
-                          final String value = entry.key;
-                          final String text = entry.value;
-                          if (value.contains(uid!)) {
-                            // 初期値を設定する
-                            if (_selectedTodoListId == '' ||
-                                _selectedTodoListId == null) {
-                              _selectedTodoListId = value;
-                              print(_selectedTodoListId);
-                            }
-                          }
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(text),
-                          );
-                        }).toList();
-
-                        return DropdownButton<String>(
-                          value: _selectedTodoListId, // 初期値を設定する
-                          items: dropdownItems,
-                          onChanged: (String? selectedValue) {
-                            setState(() {
-                              _selectedTodoListId = selectedValue;
-                            });
-                          },
-                        );
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: uid != null
+                ? FutureBuilder<Map<String, dynamic>>(
+                    future: UserDataService.getUserData(uid!),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // データ取得中の表示
+                      } else if (snapshot.hasError) {
+                        return Text('エラー: ${snapshot.error}');
                       } else {
-                        return Text("userDataがnullです");
+                        final userData = snapshot.data;
+                        if (userData != null) {
+                          Map<String, dynamic> sortedUserData;
+
+                          if (_sortTypeTodoListValue == 'CreatedAt') {
+                            if(_descendingTodoListValue) {
+                              sortedUserData = sortedMapByKeyDescending(userData);
+                            } else {
+                              sortedUserData = sortedMapByKeyAscending(userData);
+                            }
+                          } else if (_sortTypeTodoListValue == 'Name') {
+                            if(_descendingTodoListValue) {
+                              sortedUserData = sortedMapByValueDescending(userData);
+                            } else {
+                              sortedUserData = sortedMapByValueAscending(userData);
+                            }
+                          } else {
+                            sortedUserData = userData;
+                          }
+
+                          // userDataの各エントリをDropdownMenuItemに変換する
+                          List<DropdownMenuItem<String>> dropdownItems =
+                              sortedUserData.entries.map((entry) {
+                            final String value = entry.key;
+                            final String text = entry.value;
+                            if (value.contains(uid!)) {
+                              // 初期値を設定する
+                              if (_selectedTodoListId == '' ||
+                                  _selectedTodoListId == null) {
+                                _selectedTodoListId = value;
+                                print(_selectedTodoListId);
+                              }
+                            }
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(text),
+                            );
+                          }).toList();
+
+                          return DropdownButton<String>(
+                            value: _selectedTodoListId, // 初期値を設定する
+                            items: dropdownItems,
+                            onChanged: (String? selectedValue) {
+                              setState(() {
+                                _selectedTodoListId = selectedValue;
+                              });
+                            },
+                          );
+                        } else {
+                          return Text("userDataがnullです");
+                        }
                       }
-                    }
-                  },
-                )
-              : Text('uidがnull'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // （2） 実際に表示するページ(ウィジェット)を指定する
-                    builder: (context) => SettingsPage(),
-                  ),
-                );
-              },
-            ),
-            // IconButton(
-            //   icon: Icon(Icons.remove),
-            //   onPressed: () => _decrementCounter(),
-            // ),
-          ],
-          backgroundColor: Colors.green,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          // flexibleSpace: Container(
-          //   decoration: BoxDecoration(
-          //     image: DecorationImage(
-          //         image: AssetImage(imagePath), fit: BoxFit.cover),
-          //   ),
-          // ),
-        ),
-        drawer: SideMenu(),
-        backgroundColor: Color.fromARGB(255, 122, 175, 228),
-        body: Column(
-          children: [
-            // uid != null ? TodoListFirestore(todoListId: selectedTodoListId!) : TodoListSqflite(),
-            uid != null
-                ? TodoListFirestore(
-                    todoListId: _selectedTodoListId!,
-                    sortColumnTodoValue: _sortColumnTodoValue,
-                    descendingTodoValue: _descendingTodoValue,
+                    },
                   )
-                : Text('TodoListSqflite()'),
-            // Admob
-            AdMobBanner(),
-          ],
+                : Text('uidがnull'),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      // （2） 実際に表示するページ(ウィジェット)を指定する
+                      builder: (context) => SettingsPage(),
+                    ),
+                  );
+                },
+              ),
+              // IconButton(
+              //   icon: Icon(Icons.remove),
+              //   onPressed: () => _decrementCounter(),
+              // ),
+            ],
+            // backgroundColor: Colors.green,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.black),
+            // flexibleSpace: Container(
+            //   decoration: BoxDecoration(
+            //     image: DecorationImage(
+            //         image: AssetImage(imagePath), fit: BoxFit.cover),
+            //   ),
+            // ),
+          ),
+          drawer: SideMenu(),
+          // backgroundColor: Color.fromARGB(255, 122, 175, 228),
+          body: Column(
+            children: [
+              // uid != null ? TodoListFirestore(todoListId: selectedTodoListId!) : TodoListSqflite(),
+              uid != null
+                  ? TodoListFirestore(
+                      todoListId: _selectedTodoListId!,
+                      sortColumnTodoValue: _sortColumnTodoValue,
+                      descendingTodoValue: _descendingTodoValue,
+                    )
+                  : Text('TodoListSqflite()'),
+              // Admob
+              AdMobBanner(),
+            ],
+          ),
         ),
       ),
     );

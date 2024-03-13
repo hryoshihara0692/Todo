@@ -1,27 +1,14 @@
-// import 'package:flutter/material.dart';
-
-// class Login extends StatelessWidget {
-//   const Login({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text("login");
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:todo/screen_pod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/components/ad_mob.dart';
+import 'package:todo/pages/home.dart';
 import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/round_button.dart';
-// import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginPage extends StatefulWidget {
-  // const AccountRegistrationPage({super.key});
   const LoginPage({super.key});
 
   @override
@@ -52,149 +39,128 @@ class _LoginPageState extends State<LoginPage> {
     final designW = screen.designW(200);
     final designH = screen.designH(200);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                width: designW,
-                height: designH,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.green,
-                ),
-                // margin: const EdgeInsets.fromLTRB(0, 100, 0, 100),
-                child: const Center(child: Text('Flex 1')),
-              ),
+    return DefaultTabController(
+      length: 1,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(designH),
+          child: AppBar(
+            // backgroundColor: Colors.brown,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            // Container(
-            //   child: TextField(),
-            // ),
-            Expanded(
-              child: Container(
-                color: Colors.yellow,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 50,
-                      child: TextField(
-                        controller: _idController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(width: 3)),
-                          hintText: 'メールアドレス',
-                        ),
+            flexibleSpace: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  // width: designW,
+                  height: screen.designH(125),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue,
+                  ),
+                  margin: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+                  // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: const Center(child: Text('Flex 1')),
+                ),
+                Container(
+                  // color: Colors.amber,
+                  height: kToolbarHeight,
+                  child: TabBar(
+                    // indicatorSize: ,
+                    indicatorColor: Colors.blue,
+                    labelColor: Colors.black,
+                    tabs: [
+                      Tab(
+                        text: 'メールアドレスでログイン',
                       ),
-                    ),
-                    const SizedBox(
-                      height: 25.0,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      child: TextField(
-                        controller: _passController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(width: 3)),
-                          hintText: 'パスワード',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 25.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    // color: Colors.yellow,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        RoundButton(
-                          buttonName: 'キャンセル',
-                          buttonWidth: 150,
-                          onPressed: () {
-                            // context.push('/');
-                            Navigator.pop(context);
-                          },
+                        SizedBox(
+                          height: 25,
+                        ),
+                        SizedBox(
+                          height: 50,
+                          child: TextField(
+                            controller: _idController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 3)),
+                              hintText: 'mail_address@sample.com',
+                              labelText: 'メールアドレス',
+                            ),
+                          ),
                         ),
                         const SizedBox(
-                          width: 25,
+                          height: 25.0,
                         ),
-                        RoundButton(
-                          buttonName: 'ログインする',
-                          buttonWidth: 150,
-                          onPressed: () {
-                            // context.push('/');
-                            _loginAccount(context, _idController.text,
-                                _passController.text);
-                          },
+                        SizedBox(
+                          height: 50,
+                          child: TextField(
+                            controller: _passController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 3)),
+                              hintText: 'ex) Password1234',
+                              labelText: 'パスワード',
+                            ),
+                            obscureText: true,
+                            obscuringCharacter: '*',
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 25.0,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundButton(
+                              buttonName: 'キャンセル',
+                              buttonWidth: 150,
+                              onPressed: () {
+                                // context.push('/');
+                                Navigator.pop(context);
+                              },
+                            ),
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            RoundButton(
+                              buttonName: 'ログイン',
+                              buttonWidth: 150,
+                              onPressed: () {
+                                // context.push('/');
+                                _loginAccount(context, _idController.text,
+                                    _passController.text);
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    RoundButton(
-                      buttonName: 'Googleログイン',
-                      buttonWidth: 150,
-                      onPressed: () {
-                        signInWithGoogle();
-                      },
-                    ),
-                    RoundButton(
-                      buttonName: 'Appleログイン',
-                      buttonWidth: 150,
-                      onPressed: () {
-                        signInWithApple();
-                      },
-                    ),
-
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     RoundButton(
-                    //       buttonName: '確',
-                    //       buttonWidth: 150,
-                    //       onPressed: () {
-                    //         // context.push('/');
-                    //         final String user_id = FirebaseAuth
-                    //             .instance.currentUser!.uid
-                    //             .toString();
-                    //         print('ユーザID : $user_id');
-                    //       },
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 25,
-                    //     ),
-                    //     RoundButton(
-                    //       buttonName: 'out',
-                    //       buttonWidth: 150,
-                    //       onPressed: () async {
-                    //         await FirebaseAuth.instance.signOut();
-                    //       },
-                    //     ),
-                    //   ],
-                    // ),
-                  ],
+                  ),
                 ),
-              ),
+                AdMobBanner(),
+              ],
             ),
-            AdMobBanner(),
-            // FutureBuilder(
-            //   future: AdSize.getAnchoredAdaptiveBannerAdSize(
-            //       Orientation.portrait,
-            //       MediaQuery.of(context).size.width.truncate()),
-            //   builder: (BuildContext context,
-            //       AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot) {
-            //     if (snapshot.hasData) {
-            //       return SizedBox(
-            //         width: double.infinity,
-            //         child: _adMob.getAdBanner(),
-            //       );
-            //     } else {
-            //       return Container(
-            //         height: _adMob.getAdBannerHeight(),
-            //         color: Colors.white,
-            //       );
-            //     }
-            //   },
-            // ),
           ],
         ),
       ),
@@ -209,9 +175,27 @@ class _LoginPageState extends State<LoginPage> {
         password: pass,
       );
 
-      // Navigator.pushNamed(context, '/');
-      // context.push('/');
-      Navigator.pop(context);
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return HomePage();
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // 右から左
+            final Offset begin = Offset(1.0, 0.0);
+            // 左から右
+            // final Offset begin = Offset(-1.0, 0.0);
+            final Offset end = Offset.zero;
+            final Animatable<Offset> tween = Tween(begin: begin, end: end)
+                .chain(CurveTween(curve: Curves.easeInOut));
+            final Animation<Offset> offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        ),
+      );
     }
 
     /// アカウントに失敗した場合のエラー処理

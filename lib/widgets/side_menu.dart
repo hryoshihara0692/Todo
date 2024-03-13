@@ -9,8 +9,7 @@ import 'package:todo/pages/create_account.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/todo_list_admin.dart';
 
-// test
-import 'package:todo/test.dart';
+import 'package:todo/pages/user_admin.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -39,11 +38,30 @@ class SideMenu extends StatelessWidget {
               onTap: () {
                 // context.push('/login');
                 // （1） 指定した画面に遷移する
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // （2） 実際に表示するページ(ウィジェット)を指定する
-                    builder: (context) => LoginPage(),
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     // （2） 実際に表示するページ(ウィジェット)を指定する
+                //     builder: (context) => UserAdminPage(),
+                //   ),
+                // );
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return UserAdminPage(isNewAccount: false);
+                    },
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      final Offset begin = Offset(1.0, 0.0); // 右から左
+                      // final Offset begin = Offset(-1.0, 0.0); // 左から右
+                      final Offset end = Offset.zero;
+                      final Animatable<Offset> tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: Curves.easeInOut));
+                      final Animation<Offset> offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
                   ),
                 );
               },
@@ -54,11 +72,23 @@ class SideMenu extends StatelessWidget {
               onTap: () {
                 // context.push('/account_registration');
                 // （1） 指定した画面に遷移する
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // （2） 実際に表示するページ(ウィジェット)を指定する
-                    builder: (context) => CreateAccountPage(),
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return UserAdminPage(isNewAccount: true);
+                    },
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      final Offset begin = Offset(1.0, 0.0); // 右から左
+                      // final Offset begin = Offset(-1.0, 0.0); // 左から右
+                      final Offset end = Offset.zero;
+                      final Animatable<Offset> tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: Curves.easeInOut));
+                      final Animation<Offset> offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
                   ),
                 );
               },
@@ -85,17 +115,17 @@ class SideMenu extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.person),
               title: Text('アプリについて'),
-              onTap: () {
-                // context.push('/login');
-                // （1） 指定した画面に遷移する
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // （2） 実際に表示するページ(ウィジェット)を指定する
-                    builder: (context) => TestPage(),
-                  ),
-                );
-              },
+              // onTap: () {
+              //   // context.push('/login');
+              //   // （1） 指定した画面に遷移する
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       // （2） 実際に表示するページ(ウィジェット)を指定する
+              //       builder: (context) => UserAdminPage(),
+              //     ),
+              //   );
+              // },
             ),
           ],
         ),
@@ -164,17 +194,17 @@ class SideMenu extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.person),
               title: Text('アプリについて'),
-              onTap: () {
-                // context.push('/login');
-                // （1） 指定した画面に遷移する
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // （2） 実際に表示するページ(ウィジェット)を指定する
-                    builder: (context) => TestPage(),
-                  ),
-                );
-              },
+              // onTap: () {
+              //   // context.push('/login');
+              //   // （1） 指定した画面に遷移する
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       // （2） 実際に表示するページ(ウィジェット)を指定する
+              //       builder: (context) => UserAdminPage(),
+              //     ),
+              //   );
+              // },
             ),
           ],
         ),

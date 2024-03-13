@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:todo/database/todo_data_service.dart';
 import 'package:todo/database/todo_item.dart';
 import 'package:uuid/uuid.dart';
@@ -45,11 +46,13 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
         BuildContext context,
         AsyncSnapshot<QuerySnapshot> snapshot,
       ) {
-        // if (snapshot.data == null) {
-        //   //TODO 初回起動時にここに入ってきてる
-        //   return const Text('empty');
-        // } else if (snapshot.data!.docs.isEmpty) {
-        if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+        if (snapshot.data == null) {
+          ///
+          /// 処理を待つ表示にする
+          ///
+          return const Text('empty');
+        } else if (snapshot.data!.docs.isEmpty) {
+        // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
           var uuIdForTodo = uuid.v4();
@@ -143,7 +146,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   TodoDataService.deleteTodoData(item.id),
                             ),
                           ),
-                        );
+                        ).animate().fadeIn(duration: 500.ms);
                       },
                     ),
                   ),
