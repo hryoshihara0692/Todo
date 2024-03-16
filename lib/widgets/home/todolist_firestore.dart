@@ -165,10 +165,6 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                           title: Text('空のTodoがすでにあります'),
                           content: Text('もともとある方をつかってください〜'),
                           actions: [
-                            // TextButton(
-                            //   child: Text("Cancel"),
-                            //   onPressed: () => Navigator.pop(context),
-                            // ),
                             TextButton(
                               child: Text("OK"),
                               onPressed: () => Navigator.pop(context),

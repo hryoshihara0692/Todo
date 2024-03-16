@@ -36,27 +36,21 @@ class SideMenu extends StatelessWidget {
               leading: Icon(Icons.login),
               title: Text('ログイン'),
               onTap: () {
-                // context.push('/login');
-                // （1） 指定した画面に遷移する
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     // （2） 実際に表示するページ(ウィジェット)を指定する
-                //     builder: (context) => UserAdminPage(),
-                //   ),
-                // );
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) {
                       return UserAdminPage(isNewAccount: false);
                     },
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       final Offset begin = Offset(1.0, 0.0); // 右から左
                       // final Offset begin = Offset(-1.0, 0.0); // 左から右
                       final Offset end = Offset.zero;
-                      final Animatable<Offset> tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: Curves.easeInOut));
-                      final Animation<Offset> offsetAnimation = animation.drive(tween);
+                      final Animatable<Offset> tween =
+                          Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: Curves.easeInOut));
+                      final Animation<Offset> offsetAnimation =
+                          animation.drive(tween);
                       return SlideTransition(
                         position: offsetAnimation,
                         child: child,
@@ -70,20 +64,22 @@ class SideMenu extends StatelessWidget {
               leading: Icon(Icons.person_add),
               title: Text('新規登録'),
               onTap: () {
-                // context.push('/account_registration');
                 // （1） 指定した画面に遷移する
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) {
                       return UserAdminPage(isNewAccount: true);
                     },
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       final Offset begin = Offset(1.0, 0.0); // 右から左
                       // final Offset begin = Offset(-1.0, 0.0); // 左から右
                       final Offset end = Offset.zero;
-                      final Animatable<Offset> tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: Curves.easeInOut));
-                      final Animation<Offset> offsetAnimation = animation.drive(tween);
+                      final Animatable<Offset> tween =
+                          Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: Curves.easeInOut));
+                      final Animation<Offset> offsetAnimation =
+                          animation.drive(tween);
                       return SlideTransition(
                         position: offsetAnimation,
                         child: child,
@@ -94,26 +90,19 @@ class SideMenu extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.notifications),
-              title: Text('通知設定'),
+              leading: Icon(Icons.settings),
+              title: Text('設定'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('プレミアムプラン'),
-              onTap: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.live_help),
               title: Text('ヘルプ'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.volunteer_activism),
               title: Text('ご要望・不具合'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.info_outline),
               title: Text('アプリについて'),
               // onTap: () {
               //   // context.push('/login');
@@ -127,6 +116,13 @@ class SideMenu extends StatelessWidget {
               //   );
               // },
             ),
+            // ListTile(
+            //   leading: Icon(Icons.logout),
+            //   title: Text('ログアウト'),
+            //   onTap: () async {
+            //     await FirebaseAuth.instance.signOut();
+            //   },
+            // ),
           ],
         ),
       );
@@ -142,26 +138,24 @@ class SideMenu extends StatelessWidget {
                 decoration: BoxDecoration(),
                 child: Container(
                   color: Colors.yellow,
+                  child: Container(
+                    width: 120.0,
+                    height: 120.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.scaleDown,
+                        image: AssetImage('assets/images/mail.png'),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.login),
-              title: Text('ユーザIDあります'),
-              onTap: () {
-                // context.push('/login');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person_add),
-              title: Text('新規登録'),
-              onTap: () {
-                // context.push('/account_registration');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person_add),
-              title: Text('TodoList登録'),
+              leading: Icon(Icons.list_alt),
+              //単語調整
+              title: Text('TODOリスト管理'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -173,26 +167,19 @@ class SideMenu extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.notifications),
-              title: Text('通知設定'),
+              leading: Icon(Icons.settings),
+              title: Text('設定'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('プレミアムプラン'),
-              onTap: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.live_help),
               title: Text('ヘルプ'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.volunteer_activism),
               title: Text('ご要望・不具合'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.info_outline),
               title: Text('アプリについて'),
               // onTap: () {
               //   // context.push('/login');
@@ -205,6 +192,13 @@ class SideMenu extends StatelessWidget {
               //     ),
               //   );
               // },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ログアウト'),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+              },
             ),
           ],
         ),
