@@ -23,7 +23,6 @@ class UserAdminPage extends StatefulWidget {
 }
 
 class _UserAdminPageState extends State<UserAdminPage> {
-
   late int initialTabIndex;
   final AdMob _adMob = AdMob();
 
@@ -121,6 +120,7 @@ class _UserAdminPageState extends State<UserAdminPage> {
                             btnText: 'AppleID でログイン',
                             onPressed: () async {
                               await signInWithApple();
+                              await checkUserCollection();
                               Navigator.of(context).pushReplacement(
                                 PageRouteBuilder(
                                   pageBuilder:
@@ -163,6 +163,7 @@ class _UserAdminPageState extends State<UserAdminPage> {
                             btnText: 'Google でログイン',
                             onPressed: () async {
                               await signInWithGoogle();
+                              await checkUserCollection();
                               Navigator.of(context).pushReplacement(
                                 PageRouteBuilder(
                                   pageBuilder:
@@ -242,6 +243,7 @@ class _UserAdminPageState extends State<UserAdminPage> {
                 ],
               ),
             ),
+
             ///
             /// 登録側
             ///
@@ -266,6 +268,7 @@ class _UserAdminPageState extends State<UserAdminPage> {
                             btnText: 'AppleID で登録',
                             onPressed: () async {
                               await signInWithApple();
+                              await checkUserCollection();
                               Navigator.of(context).pushReplacement(
                                 PageRouteBuilder(
                                   pageBuilder:
@@ -308,7 +311,7 @@ class _UserAdminPageState extends State<UserAdminPage> {
                             btnText: 'Google で登録',
                             onPressed: () async {
                               await signInWithGoogle();
-                              checkUid();
+                              await checkUserCollection();
                               Navigator.of(context).pushReplacement(
                                 PageRouteBuilder(
                                   pageBuilder:
@@ -413,18 +416,44 @@ class _UserAdminPageState extends State<UserAdminPage> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  void checkUid() {
+  Future<void> checkUserCollection() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-
     ///
     /// checkUidの名前を変える
     /// 取得したuidでTodoListIDを生成して登録する処理を追加予定
     ///
     if (uid != null) {
-      print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-      print(uid);
-      print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    }
+      String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+      Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
+      final _movieRef = FirebaseFirestore.instance.collection('USER').doc(uid);
+      await _movieRef.get().then(
+            (docSnapshot) => {
+              if (docSnapshot.exists)
+                {
+                  // 既に登録されているドキュメントの場合
+                  print('追加しない')
+                }
+              else
+                {
+                  // // 登録されてない新しいドキュメントの場合
+                  // FirebaseFirestore.instance
+                  //     .collection('USER')
+                  //     .doc(uid)
+                  //     .set({'id': movieId, 'title': title})
+                  //     .then(
+                  //       (value) => print('追加しました'),
+                  //     )
+                  //     .catchError((error) {
+                  //       print('追加失敗！')
+                  //     }),
+                  FirebaseFirestore.instance
+                      .collection('USER')
+                      .doc(uid)
+                      .set(data)
+                }
+            },
+          );
+    } else {}
   }
 
   Future<UserCredential> signInWithApple() async {
