@@ -177,43 +177,60 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  ///
-                  /// 空Todoの有無をチェック
-                  ///
-                  if (hasEmptyTodo) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('空のTodoがすでにあります'),
-                          content: Text('もともとある方をつかってください〜'),
-                          actions: [
-                            TextButton(
-                              child: Text("OK"),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FloatingActionButton(
+                    // focusColor: Colors.red,
+                    // hoverColor: Colors.blue,
+                    splashColor: Colors.green,
+                    backgroundColor: Colors.yellow,
+                    // foregroundColor: Colors.black,
+                    onPressed: () {
+                      ///
+                      /// 空Todoの有無をチェック
+                      ///
+                      if (hasEmptyTodo) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('空のTodoがすでにあります'),
+                              content: Text('もともとある方をつかってください〜'),
+                              actions: [
+                                TextButton(
+                                  child: Text("OK"),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
+                            );
+                          },
                         );
-                      },
-                    );
-                  } else {
-                    //UUID生成
-                    var uuid = Uuid();
-                    var uuIdForTodo = uuid.v4();
-                    Map<String, dynamic> row = {
-                      "TodoListID": widget.todoListId,
-                      "Content": '',
-                      "isChecked": 0,
-                      "CreatedAt": Timestamp.fromDate(DateTime.now()),
-                      "UpdatedAt": Timestamp.fromDate(DateTime.now()),
-                    };
+                      } else {
+                        //UUID生成
+                        var uuid = Uuid();
+                        var uuIdForTodo = uuid.v4();
+                        Map<String, dynamic> row = {
+                          "TodoListID": widget.todoListId,
+                          "Content": '',
+                          "isChecked": 0,
+                          "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                          "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                        };
 
-                    TodoDataService.createTodoData(uuIdForTodo, row);
-                  }
-                },
-                child: Text('追加'),
+                        TodoDataService.createTodoData(uuIdForTodo, row);
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.post_add),
+                        Text(' 追 加 '),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
