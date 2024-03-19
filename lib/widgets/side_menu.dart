@@ -5,6 +5,7 @@ import 'package:todo/database/todo_item.dart';
 
 import 'package:todo/pages/login.dart';
 import 'package:todo/pages/create_account.dart';
+import 'package:todo/pages/home.dart';
 
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/todo_list_admin.dart';
@@ -135,20 +136,59 @@ class SideMenu extends StatelessWidget {
             SizedBox(
               height: 120,
               child: DrawerHeader(
-                decoration: BoxDecoration(),
+                // decoration: BoxDecoration(
+                //   shape: BoxShape.rectangle,
+                //   image: DecorationImage(
+                //     fit: BoxFit.fitWidth,
+                //     image: AssetImage('assets/images/mail.png'),
+                //   ),
+                // ),
                 child: Container(
-                  color: Colors.yellow,
-                  child: Container(
-                    width: 120.0,
-                    height: 120.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.scaleDown,
-                        image: AssetImage('assets/images/mail.png'),
+                  // color: Colors.yellow,
+                  child: Row(
+                    children: [
+                      // SizedBox(width: 10), // アイコンとテキストの間隔を調整
+                      Container(
+                        ///
+                        /// アイコンに背景色をつける場合
+                        ///
+                        // color: Colors.white,
+                        width: 50, // アイコンの幅
+                        height: 50, // アイコンの高さ
+                        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5), // 四角形の角を丸める
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/mail.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: Text('青やぎ'),
+                      ),
+                    ],
                   ),
+                  // child: Row(
+                  //   children: [
+                  //     Text('aaa'),
+                  //     Container(
+                  //       child: Container(
+                  //         // width: 110.0,
+                  //         // height: 110.0,
+                  //         decoration: BoxDecoration(
+                  //           shape: BoxShape.rectangle,
+                  //           image: DecorationImage(
+                  //             fit: BoxFit.contain,
+                  //             image: AssetImage('assets/images/mail.png'),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ),
               ),
             ),
@@ -197,7 +237,54 @@ class SideMenu extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text('ログアウト'),
               onTap: () async {
-                await FirebaseAuth.instance.signOut();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('空のTodoがすでにあります'),
+                      content: Text('もともとある方をつかってください〜'),
+                      actions: [
+                        TextButton(
+                          child: Text("キャンセル"),
+                          onPressed: () async {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text("OK"),
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.of(context).pushReplacement(
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) {
+                                  return HomePage();
+                                },
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  // 右から左
+                                  final Offset begin = Offset(1.0, 0.0);
+                                  // 左から右
+                                  // final Offset begin = Offset(-1.0, 0.0);
+                                  final Offset end = Offset.zero;
+                                  final Animatable<Offset> tween =
+                                      Tween(begin: begin, end: end).chain(
+                                          CurveTween(curve: Curves.easeInOut));
+                                  final Animation<Offset> offsetAnimation =
+                                      animation.drive(tween);
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ],
