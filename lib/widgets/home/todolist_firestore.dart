@@ -52,7 +52,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           ///
           return const Text('empty');
         } else if (snapshot.data!.docs.isEmpty) {
-        // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+          // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
           var uuIdForTodo = uuid.v4();
@@ -142,8 +142,33 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                             ),
                             trailing: IconButton(
                               icon: Icon(Icons.close),
-                              onPressed: () =>
-                                  TodoDataService.deleteTodoData(item.id),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text(item.content),
+                                      content: Text('こちらのTODOを削除します。よろしいですか？'),
+                                      actions: [
+                                        TextButton(
+                                          child: Text("キャンセル"),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text("OK"),
+                                          onPressed: () async {
+                                            TodoDataService.deleteTodoData(
+                                                item.id);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ).animate().fadeIn(duration: 500.ms);
