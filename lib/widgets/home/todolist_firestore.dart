@@ -120,10 +120,12 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                               value: item.isChecked == 1,
                             ),
                             title: Focus(
-                              onFocusChange: (hasFocus) {
+                              onFocusChange: (hasFocus) async {
                                 if (!hasFocus) {
-                                  TodoDataService.updateTodoContentData(
-                                      item.id, item.controller.text);
+                                  if (item.content != item.controller.text) {
+                                    await TodoDataService.updateTodoContentData(
+                                        item.id, item.controller.text);
+                                  }
                                 }
                               },
                               child: TextField(
@@ -178,7 +180,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
                 child: SizedBox(
                   width: double.infinity,
                   child: FloatingActionButton(
