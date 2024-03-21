@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:todo/database/todo_data_service.dart';
 import 'package:todo/database/todo_item.dart';
+import 'package:todo/pages/settings.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,15 +24,100 @@ class TodoListFirestore extends StatefulWidget {
 }
 
 class _TodoListFirestoreState extends State<TodoListFirestore> {
+  bool _isShowingSnackbar = false;
+
+  final deleteButtonModeSPKeyName = 'deleteButtonMode';
+
+  String _deleteButtonModeValue = 'long';
+
   @override
   void initState() {
     super.initState();
+    _initSharedPreferencesData();
   }
 
   //画面消失時動作
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _initSharedPreferencesData() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(deleteButtonModeSPKeyName)) {
+      setState(() {
+        final deleteButtonModeValue =
+            prefs.getString(deleteButtonModeSPKeyName);
+        _deleteButtonModeValue = deleteButtonModeValue!;
+      });
+    }
+  }
+
+  void showDeleteButtonSnackbar(String deleteButtonModeName) {
+    String modeName = '';
+    if (deleteButtonModeName == 'long') {
+      modeName = '長押し';
+    } else if (deleteButtonModeName == 'single') {
+      modeName = '1回タップ';
+    } else if (deleteButtonModeName == 'double') {
+      modeName = '2回タップ';
+    }
+
+    if (!_isShowingSnackbar) {
+      setState(() {
+        _isShowingSnackbar = true;
+      });
+      final snackBar = SnackBar(
+        content: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('削除ボタンは$modeNameで実行できます。'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text('設定で変更可能です。'),
+                TextButton(
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(
+                        Colors.blue,
+                      ),
+                      textStyle: MaterialStateProperty.all(
+                          TextStyle(decoration: TextDecoration.underline))),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        // （2） 実際に表示するページ(ウィジェット)を指定する
+                        builder: (context) => SettingsPage(),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  },
+                  child: Text('設定画面へ'),
+                )
+              ],
+            ),
+          ],
+        ),
+        duration: const Duration(seconds: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.only(left: 23, right: 23, bottom: 23),
+        behavior: SnackBarBehavior.floating,
+        showCloseIcon: true,
+      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(snackBar)
+          .closed
+          .then((reason) {
+        setState(() {
+          _isShowingSnackbar = false;
+        });
+      });
+    }
   }
 
   @override
@@ -142,11 +228,41 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 },
                               ),
                             ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.close),
-                              onPressed: () {
-                                TodoDataService.deleteTodoData(item.id);
+                            //削除ボタン
+                            trailing: GestureDetector(
+                              onLongPress: () {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                if (_deleteButtonModeValue == 'long') {
+                                  TodoDataService.deleteTodoData(item.id);
+                                } else {
+                                  showDeleteButtonSnackbar(
+                                      _deleteButtonModeValue);
+                                }
                               },
+                              onDoubleTap: () {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                if (_deleteButtonModeValue == 'double') {
+                                  TodoDataService.deleteTodoData(item.id);
+                                } else {
+                                  showDeleteButtonSnackbar(
+                                      _deleteButtonModeValue);
+                                }
+                              },
+                              child: IconButton(
+                                icon: Icon(Icons.close),
+                                onPressed: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  if (_deleteButtonModeValue == 'single') {
+                                    TodoDataService.deleteTodoData(item.id);
+                                  } else {
+                                    showDeleteButtonSnackbar(
+                                        _deleteButtonModeValue);
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ).animate().fadeIn(duration: 500.ms);
@@ -166,39 +282,52 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                     backgroundColor: Colors.yellow,
                     // foregroundColor: Colors.black,
                     onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      //UUID生成
+                      var uuid = Uuid();
+                      var uuIdForTodo = uuid.v4();
+                      Map<String, dynamic> row = {
+                        "TodoListID": widget.todoListId,
+                        "Content": '',
+                        "isChecked": 0,
+                        "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                        "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                      };
+                      TodoDataService.createTodoData(uuIdForTodo, row);
+
                       ///
                       /// 空Todoの有無をチェック
                       ///
-                      if (hasEmptyTodo) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('空のTodoがすでにあります'),
-                              content: Text('もともとある方をつかってください〜'),
-                              actions: [
-                                TextButton(
-                                  child: Text("OK"),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        //UUID生成
-                        var uuid = Uuid();
-                        var uuIdForTodo = uuid.v4();
-                        Map<String, dynamic> row = {
-                          "TodoListID": widget.todoListId,
-                          "Content": '',
-                          "isChecked": 0,
-                          "CreatedAt": Timestamp.fromDate(DateTime.now()),
-                          "UpdatedAt": Timestamp.fromDate(DateTime.now()),
-                        };
+                      // if (hasEmptyTodo) {
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (context) {
+                      //       return AlertDialog(
+                      //         title: Text('空のTodoがすでにあります'),
+                      //         content: Text('もともとある方をつかってください〜'),
+                      //         actions: [
+                      //           TextButton(
+                      //             child: Text("OK"),
+                      //             onPressed: () => Navigator.pop(context),
+                      //           ),
+                      //         ],
+                      //       );
+                      //     },
+                      //   );
+                      // } else {
+                      //   //UUID生成
+                      //   var uuid = Uuid();
+                      //   var uuIdForTodo = uuid.v4();
+                      //   Map<String, dynamic> row = {
+                      //     "TodoListID": widget.todoListId,
+                      //     "Content": '',
+                      //     "isChecked": 0,
+                      //     "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                      //     "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                      //   };
 
-                        TodoDataService.createTodoData(uuIdForTodo, row);
-                      }
+                      //   TodoDataService.createTodoData(uuIdForTodo, row);
+                      // }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

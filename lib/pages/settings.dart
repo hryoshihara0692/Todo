@@ -22,10 +22,14 @@ class _SettingsPageState extends State<SettingsPage> {
   final sortTypeSPKeyName = "SortTypeTodoList";
   final descendingTodoListSPKeyName = "DescendingTodoList";
 
+  final deleteButtonModeSPKeyName = 'deleteButtonMode';
+
   String _sortColumnTodoValue = 'CreatedAt';
   bool _descendingTodoValue = false;
   String _sortTypeTodoListValue = 'CreatedAt';
   bool _descendingTodoListValue = false;
+
+  String _deleteButtonModeValue = 'long';
 
   final AdMob _adMob = AdMob();
 
@@ -64,8 +68,16 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     if (prefs.containsKey(descendingTodoListSPKeyName)) {
       setState(() {
-        final descendingTodoListValue = prefs.getBool(descendingTodoListSPKeyName);
+        final descendingTodoListValue =
+            prefs.getBool(descendingTodoListSPKeyName);
         _descendingTodoListValue = descendingTodoListValue!;
+      });
+    }
+    if (prefs.containsKey(deleteButtonModeSPKeyName)) {
+      setState(() {
+        final deleteButtonModeValue =
+            prefs.getString(deleteButtonModeSPKeyName);
+        _deleteButtonModeValue = deleteButtonModeValue!;
       });
     }
   }
@@ -85,9 +97,16 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setString(sortTypeSPKeyName, sortTypeTodoListValue);
   }
 
-  void _setSharedPreferenceDescendingTodoList(bool descendingTodoListValue) async {
+  void _setSharedPreferenceDescendingTodoList(
+      bool descendingTodoListValue) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(descendingTodoListSPKeyName, descendingTodoListValue);
+  }
+
+  void _setSharedPreferenceDeleteButtonMode(
+      String deleteButtonModeValue) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(deleteButtonModeSPKeyName, deleteButtonModeValue);
   }
 
   @override
@@ -197,7 +216,32 @@ class _SettingsPageState extends State<SettingsPage> {
                         setState(() {
                           bool descendingTodoListValue = value == 'true';
                           _descendingTodoListValue = descendingTodoListValue;
-                          _setSharedPreferenceDescendingTodoList(descendingTodoListValue);
+                          _setSharedPreferenceDescendingTodoList(
+                              descendingTodoListValue);
+                        });
+                      },
+                    ),
+                    DropdownButton(
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'long',
+                          child: Text('長押し'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'single',
+                          child: Text('1回タップ'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'double',
+                          child: Text('2回タップ'),
+                        ),
+                      ],
+                      value: _deleteButtonModeValue,
+                      onChanged: (value) {
+                        setState(() {
+                          _deleteButtonModeValue = value!;
+                          _setSharedPreferenceDeleteButtonMode(
+                              _deleteButtonModeValue);
                         });
                       },
                     ),
