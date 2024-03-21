@@ -145,31 +145,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                             trailing: IconButton(
                               icon: Icon(Icons.close),
                               onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Text(item.content),
-                                      content: Text('こちらのTODOを削除します。よろしいですか？'),
-                                      actions: [
-                                        TextButton(
-                                          child: Text("キャンセル"),
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text("OK"),
-                                          onPressed: () async {
-                                            TodoDataService.deleteTodoData(
-                                                item.id);
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
+                                TodoDataService.deleteTodoData(item.id);
                               },
                             ),
                           ),
