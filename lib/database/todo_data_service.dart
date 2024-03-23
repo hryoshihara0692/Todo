@@ -45,7 +45,7 @@ class TodoDataService {
   ///
   /// FirestoreへTodoの登録
   ///
-  static void createTodoData(
+  static Future<void> createTodoData(
       String documentId, Map<String, dynamic> todoData) async {
     await FirebaseFirestore.instance
         .collection('TODO')

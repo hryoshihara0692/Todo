@@ -120,6 +120,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
     }
   }
 
+  Map<String, FocusNode> focusNodes = {};
+
   @override
   Widget build(BuildContext context) {
     if (widget.todoListId == null || widget.todoListId == '') {
@@ -138,6 +140,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           ///
           return const Text('empty');
         } else if (snapshot.data!.docs.isEmpty) {
+
           // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
@@ -161,7 +164,6 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           return const Text('empty');
         }
         final documents = snapshot.data!.docs;
-        bool hasEmptyTodo = documents.any((doc) => doc['Content'].isEmpty);
 
         return Expanded(
           child: Column(
@@ -185,7 +187,11 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                           updatedAt: documents[index]['UpdatedAt'].toDate(),
                           controller: TextEditingController(
                               text: documents[index]['Content']),
+                          focusNode: FocusNode(),
                         );
+                        // documents[index] に focusNode を追加
+                        focusNodes[documents[index].id] = item.focusNode;
+
                         return Card(
                           color: item.isChecked == 1
                               ? Color.fromARGB(255, 141, 141, 141)
@@ -214,17 +220,48 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   }
                                 }
                               },
-                              child: TextField(
+                              child: TextFormField(
+                                focusNode: item.focusNode,
                                 readOnly: item.isChecked == 1,
                                 controller: item.controller,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                 ),
-                                onEditingComplete: () {
-                                  TodoDataService.updateTodoContentData(
-                                      item.id, item.controller.text);
+                                onEditingComplete: () async {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
+                                  await TodoDataService.updateTodoContentData(
+                                      item.id, item.controller.text);
+                                  // 編集が完了したら次のフォーカスに移動する
+                                  if (index < documents.length - 1) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    FocusScope.of(context).requestFocus(
+                                        focusNodes[documents[index + 1].id]);
+                                  } else {
+                                    // // リストの最後の場合、キーボードを閉じる
+                                    // FocusScope.of(context).unfocus();
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    //UUID生成
+                                    var uuid = Uuid();
+                                    var uuIdForTodo = uuid.v4();
+                                    Map<String, dynamic> row = {
+                                      "TodoListID": widget.todoListId,
+                                      "Content": '',
+                                      "isChecked": 0,
+                                      "CreatedAt":
+                                          Timestamp.fromDate(DateTime.now()),
+                                      "UpdatedAt":
+                                          Timestamp.fromDate(DateTime.now()),
+                                    };
+                                    await TodoDataService.createTodoData(
+                                        uuIdForTodo, row);
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    FocusScope.of(context).requestFocus(
+                                        focusNodes[documents[index + 1].id]);
+                                  }
                                 },
                               ),
                             ),
@@ -294,40 +331,6 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                         "UpdatedAt": Timestamp.fromDate(DateTime.now()),
                       };
                       TodoDataService.createTodoData(uuIdForTodo, row);
-
-                      ///
-                      /// 空Todoの有無をチェック
-                      ///
-                      // if (hasEmptyTodo) {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (context) {
-                      //       return AlertDialog(
-                      //         title: Text('空のTodoがすでにあります'),
-                      //         content: Text('もともとある方をつかってください〜'),
-                      //         actions: [
-                      //           TextButton(
-                      //             child: Text("OK"),
-                      //             onPressed: () => Navigator.pop(context),
-                      //           ),
-                      //         ],
-                      //       );
-                      //     },
-                      //   );
-                      // } else {
-                      //   //UUID生成
-                      //   var uuid = Uuid();
-                      //   var uuIdForTodo = uuid.v4();
-                      //   Map<String, dynamic> row = {
-                      //     "TodoListID": widget.todoListId,
-                      //     "Content": '',
-                      //     "isChecked": 0,
-                      //     "CreatedAt": Timestamp.fromDate(DateTime.now()),
-                      //     "UpdatedAt": Timestamp.fromDate(DateTime.now()),
-                      //   };
-
-                      //   TodoDataService.createTodoData(uuIdForTodo, row);
-                      // }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
