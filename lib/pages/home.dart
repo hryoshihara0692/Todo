@@ -35,11 +35,13 @@ class _HomePageState extends State<HomePage> {
   final selectedTodoListIdSPKeyName = "SelectedTodoListID";
   final sortTypeSPKeyName = "SortTypeTodoList";
   final descendingTodoListSPKeyName = "DescendingTodoList";
+  final todoListOrderSPKeyName = 'todoListOrder';
 
   String _sortColumnTodoValue = 'CreatedAt';
   bool _descendingTodoValue = false;
   String _sortTypeTodoListValue = 'CreatedAt';
   bool _descendingTodoListValue = false;
+  List<String> _spNameList = [];
 
   /**
    * ドロップダウンボタン
@@ -80,7 +82,8 @@ class _HomePageState extends State<HomePage> {
     }
     if (prefs.containsKey(descendingTodoListSPKeyName)) {
       setState(() {
-        final descendingTodoListValue = prefs.getBool(descendingTodoListSPKeyName);
+        final descendingTodoListValue =
+            prefs.getBool(descendingTodoListSPKeyName);
         _descendingTodoListValue = descendingTodoListValue!;
       });
     }
@@ -102,34 +105,13 @@ class _HomePageState extends State<HomePage> {
         );
       });
     }
-  }
-
-  Map<String, dynamic> sortedMapByKeyAscending(
-      Map<String, dynamic> originalMap) {
-    List<MapEntry<String, dynamic>> sortedEntries = originalMap.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key)); // キーの昇順でソート
-    return Map.fromEntries(sortedEntries);
-  }
-
-  Map<String, dynamic> sortedMapByKeyDescending(
-      Map<String, dynamic> originalMap) {
-    List<MapEntry<String, dynamic>> sortedEntries = originalMap.entries.toList()
-      ..sort((a, b) => b.key.compareTo(a.key)); // キーの降順でソート
-    return Map.fromEntries(sortedEntries);
-  }
-
-  Map<String, dynamic> sortedMapByValueAscending(
-      Map<String, dynamic> originalMap) {
-    List<MapEntry<String, dynamic>> sortedEntries = originalMap.entries.toList()
-      ..sort((a, b) => a.value.compareTo(b.value)); // 値の昇順でソート
-    return Map.fromEntries(sortedEntries);
-  }
-
-  Map<String, dynamic> sortedMapByValueDescending(
-      Map<String, dynamic> originalMap) {
-    List<MapEntry<String, dynamic>> sortedEntries = originalMap.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value)); // 値の降順でソート
-    return Map.fromEntries(sortedEntries);
+    if (prefs.containsKey(todoListOrderSPKeyName)) {
+      setState(() {
+        final spNameList = prefs.getStringList(todoListOrderSPKeyName);
+        _spNameList = spNameList!;
+      });
+    }
+    ;
   }
 
   @override
@@ -151,40 +133,49 @@ class _HomePageState extends State<HomePage> {
                       } else {
                         final userData = snapshot.data;
                         if (userData != null) {
-                          Map<String, dynamic> sortedUserData;
+                          List<MapEntry<String, dynamic>> todoEntries =
+                              userData.entries.toList();
+                          List<String> todoLists = [];
 
-                          if (_sortTypeTodoListValue == 'CreatedAt') {
-                            if(_descendingTodoListValue) {
-                              sortedUserData = sortedMapByKeyDescending(userData);
-                            } else {
-                              sortedUserData = sortedMapByKeyAscending(userData);
-                            }
-                          } else if (_sortTypeTodoListValue == 'Name') {
-                            if(_descendingTodoListValue) {
-                              sortedUserData = sortedMapByValueDescending(userData);
-                            } else {
-                              sortedUserData = sortedMapByValueAscending(userData);
-                            }
+                          if (_spNameList.isNotEmpty) {
+                            List<String> sortedTodoListIDs = [];
+                            List<String> newTodoListIDs = [];
+
+                            _spNameList.forEach((todoListID) {
+                              if (userData.containsKey(todoListID)) {
+                                sortedTodoListIDs.add(todoListID);
+                                newTodoListIDs.add(todoListID);
+                              }
+                            });
+
+                            // newListに存在しないTodoListを追加する
+                            todoEntries.forEach((entry) {
+                              if (!newTodoListIDs.contains(entry.key)) {
+                                sortedTodoListIDs.add(entry.key);
+                              }
+                            });
+                            todoLists = sortedTodoListIDs;
                           } else {
-                            sortedUserData = userData;
+                            List<MapEntry<String, dynamic>> sortedEntries =
+                                userData.entries.toList()
+                                  ..sort((a, b) =>
+                                      a.key.compareTo(b.key)); // キーの昇順でソート
+                            Map.fromEntries(sortedEntries);
+                            todoLists.addAll(
+                                sortedEntries.map((entry) => entry.key));
                           }
-
-                          // userDataの各エントリをDropdownMenuItemに変換する
                           List<DropdownMenuItem<String>> dropdownItems =
-                              sortedUserData.entries.map((entry) {
-                            final String value = entry.key;
-                            final String text = entry.value;
-                            if (value.contains(uid!)) {
+                              todoLists.map((entry) {
+                            if (entry.contains(uid!)) {
                               // 初期値を設定する
                               if (_selectedTodoListId == '' ||
                                   _selectedTodoListId == null) {
-                                _selectedTodoListId = value;
-                                print(_selectedTodoListId);
+                                _selectedTodoListId = entry;
                               }
                             }
                             return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(text),
+                              value: entry,
+                              child: Text(userData[entry]),
                             );
                           }).toList();
 

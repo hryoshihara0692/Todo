@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Project imports:
 import 'package:todo/pages/home.dart';
@@ -30,6 +31,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: GoogleFonts.notoSansJp(
+          textStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+          ),
+        ).fontFamily,
       ),
       home: HomePage(),
     );

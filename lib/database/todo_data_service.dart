@@ -45,7 +45,7 @@ class TodoDataService {
   ///
   /// FirestoreへTodoの登録
   ///
-  static void createTodoData(
+  static Future<void> createTodoData(
       String documentId, Map<String, dynamic> todoData) async {
     await FirebaseFirestore.instance
         .collection('TODO')
@@ -56,8 +56,8 @@ class TodoDataService {
   ///
   /// FirestoreのTodoの内容更新
   ///
-  static void updateTodoContentData(String documentId, String content) async {
-    FirebaseFirestore.instance.collection('TODO').doc(documentId).update({
+  static Future<void> updateTodoContentData(String documentId, String content) async {
+    await FirebaseFirestore.instance.collection('TODO').doc(documentId).update({
       'Content': content,
       'UpdatedAt': Timestamp.fromDate(DateTime.now()),
     }).then((_) {

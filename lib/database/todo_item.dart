@@ -8,6 +8,7 @@ class TodoItem {
   DateTime createdAt;
   DateTime updatedAt;
   final TextEditingController controller;
+  FocusNode focusNode;
 
   TodoItem({
     required this.id,
@@ -17,5 +18,6 @@ class TodoItem {
     required this.createdAt,
     required this.updatedAt,
     required this.controller,
+    required this.focusNode,
   });
 }
