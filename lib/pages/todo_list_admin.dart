@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
+import 'package:todo/pages/todo_list_edit.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/admob_banner.dart';
@@ -18,10 +19,10 @@ class TodoListAdminPage extends StatefulWidget {
   const TodoListAdminPage({super.key});
 
   @override
-  State<TodoListAdminPage> createState() => _CreateAccountPageState();
+  State<TodoListAdminPage> createState() => _TodoListAdminPageState();
 }
 
-class _CreateAccountPageState extends State<TodoListAdminPage> {
+class _TodoListAdminPageState extends State<TodoListAdminPage> {
   final TextEditingController _todoListNameController = TextEditingController();
   // final TextEditingController _passController = TextEditingController();
 
@@ -224,7 +225,33 @@ class _CreateAccountPageState extends State<TodoListAdminPage> {
                     splashColor: Colors.green,
                     backgroundColor: Colors.yellow,
                     // foregroundColor: Colors.black,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) {
+                            return TodoListEditPage(todoListId: '',);
+                          },
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            // 右から左
+                            final Offset begin = Offset(1.0, 0.0);
+                            // 左から右
+                            // final Offset begin = Offset(-1.0, 0.0);
+                            final Offset end = Offset.zero;
+                            final Animatable<Offset> tween =
+                                Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: Curves.easeInOut));
+                            final Animation<Offset> offsetAnimation =
+                                animation.drive(tween);
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
