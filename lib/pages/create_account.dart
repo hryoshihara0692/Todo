@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:todo/components/ad_mob.dart';
@@ -147,7 +148,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                               buttonWidth: 150,
                               onPressed: () {
                                 _createAccount(context, _idController.text,
-                                    _passController.text);
+                                    _passController.text, 'AOYAGI');
                               },
                             ),
                           ],
@@ -165,7 +166,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     );
   }
 
-  void _createAccount(BuildContext context, String id, String pass) async {
+  void _createAccount(BuildContext context, String id, String pass, String userName) async {
     try {
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -181,9 +182,24 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       final uid = updatedUser?.uid;
 
       if (uid != null) {
-        String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
-        Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
-        await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+        String todoListID =
+            DateFormat('yyyyMMddHHmmss').format(DateTime.now()) + '-' + uid;
+
+        // USERコレクション用データ
+        Map<String, dynamic> userRow = {
+          "UserName": userName,
+          "TodoListIDs": todoListID,
+          "CreatedAt": Timestamp.fromDate(DateTime.now()),
+          "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+          "IconNo": '001',
+          "IconFileName": "",
+        };
+
+        // USERコレクションにドキュメント追加
+        UserDataService.createUserData(uid, userRow);
+
+        // Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
+        // await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
 
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
