@@ -94,16 +94,6 @@ class _HomePageState extends State<HomePage> {
         final selectedTodoListId = prefs.getString(selectedTodoListIdSPKeyName);
         _selectedTodoListId = selectedTodoListId!;
       });
-    } else {
-      print('選択していたドロップダウン情報がないため、uid($uid)でマイリストを表示する');
-      final userData = await UserDataService.getUserData(uid!);
-      print('userData: $userData');
-      setState(() {
-        _selectedTodoListId = userData.keys.firstWhere(
-          (key) => key.contains(uid!),
-          // orElse: () => '',
-        );
-      });
     }
     if (prefs.containsKey(todoListOrderSPKeyName)) {
       setState(() {
@@ -111,7 +101,6 @@ class _HomePageState extends State<HomePage> {
         _spNameList = spNameList!;
       });
     }
-    ;
   }
 
   @override
@@ -133,49 +122,106 @@ class _HomePageState extends State<HomePage> {
                       } else {
                         final userData = snapshot.data;
                         if (userData != null) {
-                          List<MapEntry<String, dynamic>> todoEntries =
-                              userData.entries.toList();
-                          List<String> todoLists = [];
+                          List<String> firestoreTodoListIDs = [];
+                          // List<dynamic> test = userData['TodoListIDs'];
+                          // firestoreTodoListIDs = test.cast<String>();
+
+                          // List<MapEntry<String, dynamic>> todoEntries =
+                          //     userData.entries.toList();
+                          Map<String, dynamic> todoEntries =
+                              userData['TodoLists'];
+
+                          // List<String> todoLists = [];
+                          Map<String, dynamic> todoLists = {};
 
                           if (_spNameList.isNotEmpty) {
                             List<String> sortedTodoListIDs = [];
                             List<String> newTodoListIDs = [];
 
-                            _spNameList.forEach((todoListID) {
-                              if (userData.containsKey(todoListID)) {
+                            for (var todoListID in _spNameList) {
+                              if (todoEntries.containsKey(todoListID)) {
                                 sortedTodoListIDs.add(todoListID);
                                 newTodoListIDs.add(todoListID);
                               }
-                            });
+                            }
 
                             // newListに存在しないTodoListを追加する
-                            todoEntries.forEach((entry) {
-                              if (!newTodoListIDs.contains(entry.key)) {
-                                sortedTodoListIDs.add(entry.key);
+                            todoEntries.forEach((key, value) {
+                              if (!newTodoListIDs.contains(key)) {
+                                sortedTodoListIDs.add(key);
                               }
                             });
-                            todoLists = sortedTodoListIDs;
+                            // sortedTodoListIDsの要素を確認し、todoEntriesの対応するキーの値をtodoListsに追加する
+                            sortedTodoListIDs.forEach((todoListID) {
+                              if (todoEntries.containsKey(todoListID)) {
+                                todoLists[todoListID] = todoEntries[todoListID];
+                              }
+                            });
                           } else {
+                            // todoLists = firestoreTodoListIDs;
+                            // todoLists.sort();
+
+                            Map<String, dynamic> tmpTodoLists =
+                                userData['TodoLists'];
+                            // エントリをリストに変換し、値でソートする
                             List<MapEntry<String, dynamic>> sortedEntries =
-                                userData.entries.toList()
-                                  ..sort((a, b) =>
-                                      a.key.compareTo(b.key)); // キーの昇順でソート
-                            Map.fromEntries(sortedEntries);
-                            todoLists.addAll(
-                                sortedEntries.map((entry) => entry.key));
+                                tmpTodoLists.entries.toList()
+                                  ..sort((a, b) => a.value.compareTo(b.value));
+
+                            // ソート後のtodoLists
+                            Map<String, dynamic> sortedTodoLists =
+                                Map.fromEntries(sortedEntries);
+
+                            todoLists = sortedTodoLists;
+
+                            // List<MapEntry<String, dynamic>> sortedEntries =
+                            //     userData['TodoLists'].toList()
+                            //       ..sort((a, b) =>
+                            //           a.key.compareTo(b.key)); // キーの昇順でソート
+                            // Map.fromEntries(sortedEntries);
+                            // todoLists.addAll(
+                            //     sortedEntries.map((entry) => entry.key) as Map<String, dynamic>);
+                            // print(todoLists);
                           }
+
+                          // List<DropdownMenuItem<String>> dropdownItems =
+                          //     todoLists.map((entry) {
+                          //   if (entry.contains(uid!)) {
+                          //     // 初期値を設定する
+                          //     if (_selectedTodoListId == '' ||
+                          //         _selectedTodoListId == null) {
+                          //       _selectedTodoListId = entry;
+                          //     }
+                          //   }
+                          //   return DropdownMenuItem<String>(
+                          //     value: entry,
+                          //     child: Container(
+                          //       width: 250, // 横幅を指定する
+                          //       child: Text(entry),
+                          //     ),
+                          //   );
+                          // }).toList();
+
+                          // print('~~~~~~~~~~~~~~~~~~~~~');
+                          // print(_selectedTodoListId);
+                          // print('~~~~~~~~~~~~~~~~~~~~~');
+
                           List<DropdownMenuItem<String>> dropdownItems =
-                              todoLists.map((entry) {
-                            if (entry.contains(uid!)) {
-                              // 初期値を設定する
+                              todoLists.entries.map((entry) {
+                            // ここで_entry_にTodoリストの情報が入るので、必要に応じて処理を行う
+                            String todoListId = entry.key;
+                            if (entry.key.contains(uid!)) {
                               if (_selectedTodoListId == '' ||
                                   _selectedTodoListId == null) {
-                                _selectedTodoListId = entry;
+                                _selectedTodoListId = entry.key;
                               }
                             }
                             return DropdownMenuItem<String>(
-                              value: entry,
-                              child: Text(userData[entry]),
+                              value: todoListId,
+                              child: Container(
+                                width: 250, // 横幅を指定する
+                                child: Text(entry.value.toString()),
+                              ),
                             );
                           }).toList();
 
@@ -188,6 +234,7 @@ class _HomePageState extends State<HomePage> {
                               });
                             },
                           );
+                          // return Text("userData");
                         } else {
                           return Text("userDataがnullです");
                         }

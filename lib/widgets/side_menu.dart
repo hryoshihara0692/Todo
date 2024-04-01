@@ -12,12 +12,17 @@ import 'package:todo/pages/todo_list_admin.dart';
 
 import 'package:todo/pages/user_admin.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
     final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
+
+    final todoListOrderSPKeyName = 'todoListOrder';
+    final selectedTodoListIdSPKeyName = "SelectedTodoListID";
 
     //if uid==nullの処理(ログアウト時)
     if (uid == null) {
@@ -253,6 +258,10 @@ class SideMenu extends StatelessWidget {
                         TextButton(
                           child: Text("OK"),
                           onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            prefs.remove(todoListOrderSPKeyName);
+                            prefs.remove(selectedTodoListIdSPKeyName);
+
                             await FirebaseAuth.instance.signOut();
                             Navigator.of(context).pushReplacement(
                               PageRouteBuilder(

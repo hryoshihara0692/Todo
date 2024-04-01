@@ -88,18 +88,36 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                 child: Container(
                   width: double.infinity,
                   margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  // child: FutureBuilder<Map<String, dynamic>>(
+                  //   future: UserDataService.getUserData(uid!),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return CircularProgressIndicator();
+                  //     } else if (snapshot.hasError) {
+                  //       return Text('エラー: ${snapshot.error}');
+                  //     } else {
+                  //       final userData = snapshot.data;
                   child: FutureBuilder<Map<String, dynamic>>(
                     future: UserDataService.getUserData(uid!),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return CircularProgressIndicator(); // データ取得中の表示
                       } else if (snapshot.hasError) {
                         return Text('エラー: ${snapshot.error}');
+                      } else if (snapshot.data == null) {
+                        return Text('データが見つかりませんでした');
                       } else {
+                        // データが存在する場合の処理
                         final userData = snapshot.data;
+                        // ここでデータを使った処理を続ける
+
                         if (userData != null) {
-                          List<MapEntry<String, dynamic>> todoEntries =
-                              userData.entries.toList();
+                          // List<MapEntry<String, dynamic>> todoEntries =
+                          //     userData.entries.toList();
+                          Map<String, dynamic> todoEntries =
+                              userData['TodoLists'];
+
+                          // print(todoEntries);
 
                           if (_spNameList.isNotEmpty) {
                             // newListの順番に従ってtodoListNameを並び替える
@@ -107,18 +125,64 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                             List<String> newTodoListIDs = [];
 
                             _spNameList.forEach((todoListID) {
-                              if (userData.containsKey(todoListID)) {
+                              if (todoEntries.containsKey(todoListID)) {
                                 sortedTodoListIDs.add(todoListID);
                                 newTodoListIDs.add(todoListID);
                               }
                             });
 
                             // newListに存在しないTodoListを追加する
-                            todoEntries.forEach((entry) {
-                              if (!newTodoListIDs.contains(entry.key)) {
-                                sortedTodoListIDs.add(entry.key);
+                            todoEntries.forEach((key, value) {
+                              if (!newTodoListIDs.contains(key)) {
+                                sortedTodoListIDs.add(key);
                               }
                             });
+
+                            // return ReorderableListView(
+                            //   onReorder: (oldIndex, newIndex) {
+                            //     setState(() {
+                            //       if (newIndex > oldIndex) {
+                            //         newIndex -= 1;
+                            //       }
+                            //       final String item =
+                            //           sortedTodoListIDs.removeAt(oldIndex);
+                            //       sortedTodoListIDs.insert(newIndex, item);
+                            //       List<String> reorderedList =
+                            //           sortedTodoListIDs;
+                            //       _setSharedPreferenceTodoListOrder(
+                            //           reorderedList);
+                            //       _spNameList = sortedTodoListIDs;
+                            //     });
+                            //   },
+                            //   children: sortedTodoListIDs
+                            //       .asMap()
+                            //       .entries
+                            //       .map((entry) {
+                            //     final int index = entry.key;
+                            //     final String todoListID = entry.value;
+                            //     return Container(
+                            //       key: Key(todoListID),
+                            //       color: index % 2 == 0
+                            //           ? Colors.grey[200]
+                            //           : Colors.white, // 背景色を交互に変更
+                            //       child: ListTile(
+                            //         title: Text(todoListID),
+                            //         trailing: Wrap(
+                            //           children: [
+                            //             IconButton(
+                            //               icon: Icon(Icons.edit),
+                            //               onPressed: () {},
+                            //             ),
+                            //             IconButton(
+                            //               icon: Icon(Icons.delete),
+                            //               onPressed: () {},
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     );
+                            //   }).toList(),
+                            // );
                             return ReorderableListView(
                               onReorder: (oldIndex, newIndex) {
                                 setState(() {
@@ -141,13 +205,16 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                                   .map((entry) {
                                 final int index = entry.key;
                                 final String todoListID = entry.value;
+                                final String todoListName =
+                                    todoEntries[todoListID];
                                 return Container(
                                   key: Key(todoListID),
                                   color: index % 2 == 0
                                       ? Colors.grey[200]
-                                      : Colors.white, // 背景色を交互に変更
+                                      : Colors.white,
                                   child: ListTile(
-                                    title: Text(userData[todoListID]),
+                                    title:
+                                        Text(todoListName), // todoEntries の値を表示
                                     trailing: Wrap(
                                       children: [
                                         IconButton(
@@ -165,14 +232,63 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                               }).toList(),
                             );
                           } else {
+                            // List<MapEntry<String, dynamic>> sortedEntries =
+                            //     userData.entries.toList()
+                            //       ..sort((a, b) =>
+                            //           a.key.compareTo(b.key)); // キーの昇順でソート
+                            // userData の TodoLists フィールドをリストに変換する
+                            // List<MapEntry<String, dynamic>> sortedEntries =
+                            //     userData['TodoLists'].entries.toList();
+
+                            // sortedEntries.sort((a, b) => a.value.compareTo(b.value));
+
+                            // Map.fromEntries(sortedEntries);
+                            // List<String> todoLists = [];
+                            // todoLists.addAll(
+                            //     sortedEntries.map((entry) => entry.key));
+                            // return ReorderableListView(
+                            //   onReorder: (oldIndex, newIndex) {
+                            //     setState(() {
+                            //       if (newIndex > oldIndex) {
+                            //         newIndex -= 1;
+                            //       }
+                            //       final String item =
+                            //           todoLists.removeAt(oldIndex);
+                            //       todoLists.insert(newIndex, item);
+                            //       List<String> reorderedList = todoLists;
+                            //       _setSharedPreferenceTodoListOrder(
+                            //           reorderedList);
+                            //       _spNameList = todoLists;
+                            //     });
+                            //   },
+                            //   children: todoLists.asMap().entries.map((entry) {
+                            //     final int index = entry.key;
+                            //     final String todoListID = entry.value;
+                            //     print('~~~~~~~~~~~~~~~~~~~');
+                            //     print(index);
+                            //     print(todoListID);
+                            //     print('~~~~~~~~~~~~~~~~~~~');
+                            //     return Container(
+                            //       key: Key(todoListID),
+                            //       color: index % 2 == 0
+                            //           ? Colors.grey[200]
+                            //           : Colors.white, // 背景色を交互に変更
+                            //       child: ListTile(
+                            //         title: Text(todoListID),
+                            //         trailing: IconButton(
+                            //           icon: Icon(Icons.edit),
+                            //           onPressed: () {},
+                            //         ),
+                            //       ),
+                            //     );
+                            //   }).toList(),
+                            // );
                             List<MapEntry<String, dynamic>> sortedEntries =
-                                userData.entries.toList()
-                                  ..sort((a, b) =>
-                                      a.key.compareTo(b.key)); // キーの昇順でソート
-                            Map.fromEntries(sortedEntries);
-                            List<String> todoLists = [];
-                            todoLists.addAll(
-                                sortedEntries.map((entry) => entry.key));
+                                userData['TodoLists'].entries.toList();
+
+                            sortedEntries
+                                .sort((a, b) => a.value.compareTo(b.value));
+
                             return ReorderableListView(
                               onReorder: (oldIndex, newIndex) {
                                 setState(() {
@@ -180,24 +296,32 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                                     newIndex -= 1;
                                   }
                                   final String item =
-                                      todoLists.removeAt(oldIndex);
-                                  todoLists.insert(newIndex, item);
-                                  List<String> reorderedList = todoLists;
+                                      sortedEntries.removeAt(oldIndex).key;
+                                  sortedEntries.insert(
+                                      newIndex,
+                                      MapEntry(
+                                          item, '')); // 現在は値は利用していないため、空文字列を設定
                                   _setSharedPreferenceTodoListOrder(
-                                      reorderedList);
-                                  _spNameList = todoLists;
+                                      sortedEntries
+                                          .map((entry) => entry.key)
+                                          .toList());
+                                  _spNameList = sortedEntries
+                                      .map((entry) => entry.key)
+                                      .toList();
                                 });
                               },
-                              children: todoLists.asMap().entries.map((entry) {
+                              children:
+                                  sortedEntries.asMap().entries.map((entry) {
                                 final int index = entry.key;
-                                final String todoListID = entry.value;
+                                final String todoListID = entry.value.key;
                                 return Container(
                                   key: Key(todoListID),
                                   color: index % 2 == 0
                                       ? Colors.grey[200]
-                                      : Colors.white, // 背景色を交互に変更
+                                      : Colors.white,
                                   child: ListTile(
-                                    title: Text(userData[todoListID]),
+                                    title: Text(
+                                        entry.value.value), // ソートされたエントリの値を表示
                                     trailing: IconButton(
                                       icon: Icon(Icons.edit),
                                       onPressed: () {},
@@ -230,7 +354,9 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) {
-                            return TodoListEditPage(todoListId: '',);
+                            return TodoListEditPage(
+                              todoListId: '',
+                            );
                           },
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {

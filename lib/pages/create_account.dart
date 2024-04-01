@@ -188,7 +188,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         // USERコレクション用データ
         Map<String, dynamic> userRow = {
           "UserName": userName,
-          "TodoListIDs": {todoListID},
+          "TodoLists": {todoListID: "マイリスト"},
           "CreatedAt": Timestamp.fromDate(DateTime.now()),
           "UpdatedAt": Timestamp.fromDate(DateTime.now()),
           "IconNo": '001',
