@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:todo/database/todo_data_service.dart';
+import 'package:todo/database/todolist_data_service.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
 import 'package:todo/screen_pod.dart';
@@ -122,25 +124,51 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
 
   Future<void> createTodoList(String todoListName, String? uid) async {
     var uuid = Uuid();
-    var todoListId = uuid.v4();
+    var uuidForTodoListId = uuid.v4();
 
-    // Firestoreのコレクション参照
-    CollectionReference users = FirebaseFirestore.instance.collection('USER');
+    // // Firestoreのコレクション参照
+    // CollectionReference users = FirebaseFirestore.instance.collection('USER');
 
-    DocumentReference docRef = users.doc(uid);
+    // DocumentReference docRef = users.doc(uid);
 
     // 追加するデータ
     String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
-    Map<String, dynamic> newData = {
-      date + '-' + todoListId: todoListName, // 新しいフィールドと値
+    // Map<String, dynamic> newData = {
+    //   date + '-' + uuidForTodoListId: todoListName, // 新しいフィールドと値
+    // };
+    String todolistID = '$date-$uuidForTodoListId';
+
+    await UserDataService.addTodoListForUserData(
+        uid!, todolistID, todoListName);
+
+    Map<String, dynamic> todolistRow = {
+      "TodoListName": todoListName,
+      "Administrator": uid,
+      "EditingPermission": 0,
+      "CreatedAt": Timestamp.fromDate(DateTime.now()),
+      "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+    };
+    await TodoListDataService.createTodoListData(todolistID, todolistRow);
+
+    // var uuid = Uuid();
+    var todoId = uuid.v4();
+
+    Map<String, dynamic> todoRow = {
+      "Content": "",
+      "isChecked": 0,
+      "CreatedAt": Timestamp.fromDate(DateTime.now()),
+      "UpdatedAt": Timestamp.fromDate(DateTime.now()),
     };
 
+    // TODOコレクションにドキュメント追加
+    await TodoDataService.createTodoData(todolistID, todoId, todoRow);
+
     // ドキュメントを更新（既存のデータとマージ）
-    docRef.update({
-      'TodoLists.$date-$todoListId': todoListName,
-    }).catchError((error) {
-      print("ドキュメントの更新中にエラーが発生しました： $error");
-    });
+    // docRef.update({
+    //   'TodoLists.$date-$uuidForTodoListId': todoListName,
+    // }).catchError((error) {
+    //   print("ドキュメントの更新中にエラーが発生しました： $error");
+    // });
 
     // await FirebaseFirestore.instance.collection('USER').doc(uid).add({
     //   todoListId: todoListName,

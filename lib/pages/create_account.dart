@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo/database/todo_data_service.dart';
+import 'package:todo/database/todolist_data_service.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
 import 'package:todo/screen_pod.dart';
@@ -8,6 +10,7 @@ import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/round_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -196,7 +199,32 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         };
 
         // USERコレクションにドキュメント追加
-        UserDataService.createUserData(uid, userRow);
+        await UserDataService.createUserData(uid, userRow);
+
+        Map<String, dynamic> todolistRow = {
+          "TodoListName": "マイリスト",
+          "Administrator": uid,
+          "EditingPermission": 0,
+          "CreatedAt": Timestamp.fromDate(DateTime.now()),
+          "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+        };
+
+        // TODOLISTコレクションにドキュメント追加
+        await TodoListDataService.createTodoListData(todoListID, todolistRow);
+
+        var uuid = Uuid();
+        var todoId = uuid.v4();
+
+        Map<String, dynamic> todoRow = {
+          "Content": "",
+          "isChecked": 0,
+          "CreatedAt": Timestamp.fromDate(DateTime.now()),
+          "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+        };
+
+        // TODOコレクションにドキュメント追加
+        await TodoDataService.createTodoData(todoListID, todoId, todoRow);
+
 
         // Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
         // await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);

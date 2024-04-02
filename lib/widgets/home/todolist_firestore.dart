@@ -128,7 +128,9 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
       return Text('${widget.todoListId}ドロップダウンリストで選択しているIDを受け取れていません');
     }
     return StreamBuilder<QuerySnapshot>(
-      stream: getStream(widget.todoListId, widget.sortColumnTodoValue,
+      // stream: getStream(widget.todoListId, widget.sortColumnTodoValue,
+      //     widget.descendingTodoValue),
+      stream: TodoDataService.getTodoData(widget.todoListId, widget.sortColumnTodoValue,
           widget.descendingTodoValue),
       builder: (
         BuildContext context,
@@ -144,16 +146,16 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
           var uuid = Uuid();
-          var uuIdForTodo = uuid.v4();
+          var todoId = uuid.v4();
           Map<String, dynamic> row = {
-            "TodoListID": widget.todoListId,
+            // "TodoListID": widget.todoListId,
             "Content": '',
             "isChecked": 0,
             "CreatedAt": Timestamp.fromDate(DateTime.now()),
             "UpdatedAt": Timestamp.fromDate(DateTime.now()),
           };
 
-          TodoDataService.createTodoData(uuIdForTodo, row);
+          TodoDataService.createTodoData(widget.todoListId, todoId, row);
 
           ///
           /// ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
@@ -180,7 +182,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                       itemBuilder: (BuildContext context, int index) {
                         TodoItem item = TodoItem(
                           id: documents[index].id,
-                          todoListId: documents[index]['TodoListID'],
+                          // todoListId: documents[index]['TodoListID'],
                           content: documents[index]['Content'],
                           isChecked: documents[index]['isChecked'],
                           createdAt: documents[index]['CreatedAt'].toDate(),
@@ -207,7 +209,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   item.isChecked = value! ? 1 : 0;
                                 });
                                 TodoDataService.updateTodoIsCheckedData(
-                                    item.id, item.isChecked);
+                                    widget.todoListId, item.id, item.isChecked);
                               },
                               value: item.isChecked == 1,
                             ),
@@ -216,7 +218,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 if (!hasFocus) {
                                   if (item.content != item.controller.text) {
                                     await TodoDataService.updateTodoContentData(
-                                        item.id, item.controller.text);
+                                        widget.todoListId, item.id, item.controller.text);
                                   }
                                 }
                               },
@@ -226,12 +228,17 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 controller: item.controller,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
+                                  // labelText: 'Enter your text',
+                                  // labelStyle: TextStyle(
+                                  //     fontFamily: 'NotoSansJP-Medium'),
                                 ),
+                                // style:
+                                //     TextStyle(fontFamily: 'NotoSansJP-Medium'),
                                 onEditingComplete: () async {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
                                   await TodoDataService.updateTodoContentData(
-                                      item.id, item.controller.text);
+                                      widget.todoListId, item.id, item.controller.text);
                                   // 編集が完了したら次のフォーカスに移動する
                                   if (index < documents.length - 1) {
                                     FocusScope.of(context)
@@ -245,9 +252,9 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                         .requestFocus(FocusNode());
                                     //UUID生成
                                     var uuid = Uuid();
-                                    var uuIdForTodo = uuid.v4();
+                                    var todoId = uuid.v4();
                                     Map<String, dynamic> row = {
-                                      "TodoListID": widget.todoListId,
+                                      // "TodoListID": widget.todoListId,
                                       "Content": '',
                                       "isChecked": 0,
                                       "CreatedAt":
@@ -256,7 +263,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                           Timestamp.fromDate(DateTime.now()),
                                     };
                                     await TodoDataService.createTodoData(
-                                        uuIdForTodo, row);
+                                        widget.todoListId, todoId, row);
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());
                                     FocusScope.of(context).requestFocus(
@@ -271,7 +278,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
                                 if (_deleteButtonModeValue == 'long') {
-                                  TodoDataService.deleteTodoData(item.id);
+                                  TodoDataService.deleteTodoData(widget.todoListId,item.id);
                                 } else {
                                   showDeleteButtonSnackbar(
                                       _deleteButtonModeValue);
@@ -281,7 +288,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
                                 if (_deleteButtonModeValue == 'double') {
-                                  TodoDataService.deleteTodoData(item.id);
+                                  TodoDataService.deleteTodoData(widget.todoListId,item.id);
                                 } else {
                                   showDeleteButtonSnackbar(
                                       _deleteButtonModeValue);
@@ -293,7 +300,7 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
                                   if (_deleteButtonModeValue == 'single') {
-                                    TodoDataService.deleteTodoData(item.id);
+                                    TodoDataService.deleteTodoData(widget.todoListId,item.id);
                                   } else {
                                     showDeleteButtonSnackbar(
                                         _deleteButtonModeValue);
@@ -324,13 +331,13 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                       var uuid = Uuid();
                       var uuIdForTodo = uuid.v4();
                       Map<String, dynamic> row = {
-                        "TodoListID": widget.todoListId,
+                        // "TodoListID": widget.todoListId,
                         "Content": '',
                         "isChecked": 0,
                         "CreatedAt": Timestamp.fromDate(DateTime.now()),
                         "UpdatedAt": Timestamp.fromDate(DateTime.now()),
                       };
-                      TodoDataService.createTodoData(uuIdForTodo, row);
+                      TodoDataService.createTodoData(widget.todoListId, uuIdForTodo, row);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -347,26 +354,5 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
         );
       },
     );
-  }
-
-  /**
-   * todoListId : 対象TodoListのID,
-   * sortColumnTodo : ソートするカラム,
-   * descendingTodo : 昇順(false),降順(true)
-   */
-  Stream<QuerySnapshot> getStream(
-      String todoListId, String sortColumnTodo, bool descendingTodo) {
-    // Stream<QuerySnapshot> getStream(String todoListId) {
-    // print('------------------------------');
-    // print(todoListId);
-    // print('------------------------------');
-    final db = FirebaseFirestore.instance;
-    final collectionRef = db
-        .collection('TODO')
-        .where('TodoListID', isEqualTo: todoListId)
-        // .orderBy(sortColumnTodo, descending: descendingTodo)
-        // .orderBy('CreatedAt', descending: false);
-        .orderBy(sortColumnTodo, descending: descendingTodo);
-    return collectionRef.snapshots();
   }
 }

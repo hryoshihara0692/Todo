@@ -63,43 +63,71 @@ class _HomePageState extends State<HomePage> {
   void _initSharedPreferencesData() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(sortColumnSPKeyName)) {
-      setState(() {
+      // setState(() {
         final sortColumnTodoValue = prefs.getString(sortColumnSPKeyName);
         _sortColumnTodoValue = sortColumnTodoValue!;
-      });
+      // });
     }
     if (prefs.containsKey(descendingTodoSPKeyName)) {
-      setState(() {
+      // setState(() {
         final descendingTodoValue = prefs.getBool(descendingTodoSPKeyName);
         _descendingTodoValue = descendingTodoValue!;
-      });
+      // });
     }
     if (prefs.containsKey(sortTypeSPKeyName)) {
-      setState(() {
+      // setState(() {
         final sortTypeTodoListValue = prefs.getString(sortTypeSPKeyName);
         _sortTypeTodoListValue = sortTypeTodoListValue!;
-      });
+      // });
     }
     if (prefs.containsKey(descendingTodoListSPKeyName)) {
-      setState(() {
+      // setState(() {
         final descendingTodoListValue =
             prefs.getBool(descendingTodoListSPKeyName);
         _descendingTodoListValue = descendingTodoListValue!;
-      });
+      // });
     }
     // ユーザーデータを取得して、selectedTodoListIdを設定
     if (prefs.containsKey(selectedTodoListIdSPKeyName)) {
       print('前回選択していたドロップダウン情報(selectedTodoListIdSPKeyName)があります');
-      setState(() {
+      // setState(() {
         final selectedTodoListId = prefs.getString(selectedTodoListIdSPKeyName);
         _selectedTodoListId = selectedTodoListId!;
-      });
+      // });
+    } else {
+      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      print('edTodoListIdSPKeyName)があります))))))))))))');
+      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      final userData = await UserDataService.getUserData(uid!);
+        final todoLists = userData['TodoLists'];
+        if (todoLists != null) {
+          _selectedTodoListId = todoLists.keys.firstWhere(
+            (key) => key is String && key.contains(uid!),
+            // orElse: () => '',
+          );
+        }
+
+      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      print(_selectedTodoListId);
+      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // setState(() {
+      //   final todoLists = userData['TodoLists'];
+      //   if (todoLists != null) {
+      //     _selectedTodoListId = todoLists.keys.firstWhere(
+      //       (key) => key is String && key.contains(uid!),
+      //       // orElse: () => '',
+      //     );
+      //   }
+      // });
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // print(_selectedTodoListId);
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||');
     }
     if (prefs.containsKey(todoListOrderSPKeyName)) {
-      setState(() {
+      // setState(() {
         final spNameList = prefs.getStringList(todoListOrderSPKeyName);
         _spNameList = spNameList!;
-      });
+      // });
     }
   }
 
@@ -210,12 +238,12 @@ class _HomePageState extends State<HomePage> {
                               todoLists.entries.map((entry) {
                             // ここで_entry_にTodoリストの情報が入るので、必要に応じて処理を行う
                             String todoListId = entry.key;
-                            if (entry.key.contains(uid!)) {
-                              if (_selectedTodoListId == '' ||
-                                  _selectedTodoListId == null) {
-                                _selectedTodoListId = entry.key;
-                              }
-                            }
+                            // if (entry.key.contains(uid!)) {
+                            //   if (_selectedTodoListId == '' ||
+                            //       _selectedTodoListId == null) {
+                            //     _selectedTodoListId = entry.key;
+                            //   }
+                            // }
                             return DropdownMenuItem<String>(
                               value: todoListId,
                               child: Container(
