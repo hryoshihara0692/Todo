@@ -130,8 +130,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
     return StreamBuilder<QuerySnapshot>(
       // stream: getStream(widget.todoListId, widget.sortColumnTodoValue,
       //     widget.descendingTodoValue),
-      stream: TodoDataService.getTodoData(widget.todoListId, widget.sortColumnTodoValue,
-          widget.descendingTodoValue),
+      stream: TodoDataService.getTodoData(widget.todoListId,
+          widget.sortColumnTodoValue, widget.descendingTodoValue),
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot> snapshot,
@@ -142,20 +142,19 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           ///
           return const Text('empty');
         } else if (snapshot.data!.docs.isEmpty) {
-
           // if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
           //UUID生成
-          var uuid = Uuid();
-          var todoId = uuid.v4();
-          Map<String, dynamic> row = {
-            // "TodoListID": widget.todoListId,
-            "Content": '',
-            "isChecked": 0,
-            "CreatedAt": Timestamp.fromDate(DateTime.now()),
-            "UpdatedAt": Timestamp.fromDate(DateTime.now()),
-          };
+          // var uuid = Uuid();
+          // var todoId = uuid.v4();
+          // Map<String, dynamic> row = {
+          //   // "TodoListID": widget.todoListId,
+          //   "Content": '',
+          //   "isChecked": 0,
+          //   "CreatedAt": Timestamp.fromDate(DateTime.now()),
+          //   "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+          // };
 
-          TodoDataService.createTodoData(widget.todoListId, todoId, row);
+          // TodoDataService.createTodoData(widget.todoListId, todoId, row);
 
           ///
           /// ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
@@ -163,7 +162,51 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
           /// 下のreturnに来る可能性を潰す
           /// ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
           ///
-          return const Text('empty');
+          return Expanded(
+              child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  // child: Text(''),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FloatingActionButton(
+                    // focusColor: Colors.red,
+                    // hoverColor: Colors.blue,
+                    splashColor: Colors.green,
+                    backgroundColor: Colors.yellow,
+                    // foregroundColor: Colors.black,
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      //UUID生成
+                      var uuid = Uuid();
+                      var uuIdForTodo = uuid.v4();
+                      Map<String, dynamic> row = {
+                        // "TodoListID": widget.todoListId,
+                        "Content": '',
+                        "isChecked": 0,
+                        "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                        "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                      };
+                      TodoDataService.createTodoData(
+                          widget.todoListId, uuIdForTodo, row);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.post_add),
+                        Text(' 追 加 '),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ));
         }
         final documents = snapshot.data!.docs;
 
@@ -218,7 +261,9 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 if (!hasFocus) {
                                   if (item.content != item.controller.text) {
                                     await TodoDataService.updateTodoContentData(
-                                        widget.todoListId, item.id, item.controller.text);
+                                        widget.todoListId,
+                                        item.id,
+                                        item.controller.text);
                                   }
                                 }
                               },
@@ -238,7 +283,9 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
                                   await TodoDataService.updateTodoContentData(
-                                      widget.todoListId, item.id, item.controller.text);
+                                      widget.todoListId,
+                                      item.id,
+                                      item.controller.text);
                                   // 編集が完了したら次のフォーカスに移動する
                                   if (index < documents.length - 1) {
                                     FocusScope.of(context)
@@ -278,7 +325,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
                                 if (_deleteButtonModeValue == 'long') {
-                                  TodoDataService.deleteTodoData(widget.todoListId,item.id);
+                                  TodoDataService.deleteTodoData(
+                                      widget.todoListId, item.id);
                                 } else {
                                   showDeleteButtonSnackbar(
                                       _deleteButtonModeValue);
@@ -288,7 +336,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
                                 if (_deleteButtonModeValue == 'double') {
-                                  TodoDataService.deleteTodoData(widget.todoListId,item.id);
+                                  TodoDataService.deleteTodoData(
+                                      widget.todoListId, item.id);
                                 } else {
                                   showDeleteButtonSnackbar(
                                       _deleteButtonModeValue);
@@ -300,7 +349,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                                   FocusScope.of(context)
                                       .requestFocus(FocusNode());
                                   if (_deleteButtonModeValue == 'single') {
-                                    TodoDataService.deleteTodoData(widget.todoListId,item.id);
+                                    TodoDataService.deleteTodoData(
+                                        widget.todoListId, item.id);
                                   } else {
                                     showDeleteButtonSnackbar(
                                         _deleteButtonModeValue);
@@ -337,7 +387,8 @@ class _TodoListFirestoreState extends State<TodoListFirestore> {
                         "CreatedAt": Timestamp.fromDate(DateTime.now()),
                         "UpdatedAt": Timestamp.fromDate(DateTime.now()),
                       };
-                      TodoDataService.createTodoData(widget.todoListId, uuIdForTodo, row);
+                      TodoDataService.createTodoData(
+                          widget.todoListId, uuIdForTodo, row);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

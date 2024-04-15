@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class TodoListEditPage extends StatefulWidget {
   final String todoListId;
@@ -31,12 +33,21 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
   final TextEditingController _todoListNameController = TextEditingController();
   // final TextEditingController _passController = TextEditingController();
 
+  Map<String, dynamic> todoList = {};
+  String? uid = '';
+
+  bool isChecked = false; // valueプロパティに渡す変数
+  bool canEdit = false; // valueプロパティに渡す変数
+
   final AdMob _adMob = AdMob();
+
+  List<String> userIDs = [];
 
   @override
   void initState() {
     super.initState();
     // _initSharedPreferencesData();
+    initData();
     _adMob.load();
   }
 
@@ -46,17 +57,248 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
     _adMob.dispose();
   }
 
+  void initData() async {
+    uid = FirebaseAuth.instance.currentUser?.uid.toString();
+
+    if (widget.todoListId != '') {
+      try {
+        DocumentSnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('TODOLIST')
+                .doc(widget.todoListId)
+                .get();
+        if (snapshot.exists) {
+          setState(() {
+            todoList = snapshot.data()!;
+            isChecked = todoList['EditingPermission'] == 1 ? true : false;
+          });
+        } else {
+          // ドキュメントが存在しない場合の処理
+          // 例: エラーメッセージの表示など
+        }
+      } catch (e) {
+        // エラーが発生した場合の処理
+        // 例: エラーメッセージの表示など
+      }
+
+      if (isChecked) {
+        setState(() {
+          canEdit = true;
+        });
+      } else {
+        if (todoList['Administrator'] == uid) {
+          setState(() {
+            canEdit = true;
+          });
+        }
+      }
+    }
+  }
+
+  void _showEditDialog(String todoListName) {
+    TextEditingController _controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("TODOリスト名を変更する"),
+          content: Column(
+            children: [
+              Text('現在のTODOリスト名'),
+              Text(todoListName),
+              Text('↓'),
+              Text('変更後のTODOリスト名'),
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: "Todo List Name",
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("キャンセル"),
+            ),
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  todoListName = _controller.text;
+                });
+                await TodoListDataService.updateTodoListName(widget.todoListId,
+                    todoListName, todoList['UserIDs'].cast<String>());
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        TodoListEditPage(todoListId: widget.todoListId),
+                  ),
+                );
+              },
+              child: Text("変更する"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showInviteDialog() {
+    // TextEditingController _controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("TODOリストにメンバーを招待する"),
+          content: Column(
+            children: [
+              Text('TODOリストID'),
+              // Text(todoListName),
+              Container(
+                margin: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey), // 枠線の色を設定
+                  // borderRadius: BorderRadius.all(
+                  //     Radius.circular(8.0)), // 枠線の角を丸める
+                ),
+                child: Text(widget.todoListId),
+              ),
+              TextButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(
+                      Colors.blue,
+                    ),
+                    textStyle: MaterialStateProperty.all(
+                        TextStyle(decoration: TextDecoration.underline))),
+                onPressed: () async {
+                  final data = ClipboardData(text: widget.todoListId);
+                  await Clipboard.setData(data);
+                },
+                child: Text('IDコピー'),
+              ),
+              Text('↑のIDを、招待する人に教えて下さい！'),
+              Text('※ホーム→TODOリスト管理→参加の画面に入力します'),
+              // TextField(
+              //   controller: _controller,
+              //   decoration: InputDecoration(
+              //     labelText: "Todo List Name",
+              //   ),
+              // ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("閉じる"),
+            ),
+            // TextButton(
+            //   onPressed: () async {
+            //     setState(() {
+            //       todoListName = _controller.text;
+            //     });
+            //     await TodoListDataService.updateTodoListName(
+            //         widget.todoListId, todoListName);
+            //     Navigator.pushReplacement(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (BuildContext context) =>
+            //             TodoListEditPage(todoListId: widget.todoListId),
+            //       ),
+            //     );
+            //   },
+            //   child: Text("変更する"),
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool _isShowingSnackbar = false;
+
+  // void showDeleteButtonSnackbar(String deleteButtonModeName) {
+  void showSnackbar() {
+    // String modeName = '';
+    // if (deleteButtonModeName == 'long') {
+    //   modeName = '長押し';
+    // } else if (deleteButtonModeName == 'single') {
+    //   modeName = '1回タップ';
+    // } else if (deleteButtonModeName == 'double') {
+    //   modeName = '2回タップ';
+    // }
+
+    if (!_isShowingSnackbar) {
+      setState(() {
+        _isShowingSnackbar = true;
+      });
+      final snackBar = SnackBar(
+        content: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Text('削除ボタンは$modeNameで実行できます。'),
+                Text('「管理者のみ」が変更可能です。'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(''),
+                // TextButton(
+                //   style: ButtonStyle(
+                //       foregroundColor: MaterialStateProperty.all(
+                //         Colors.blue,
+                //       ),
+                //       textStyle: MaterialStateProperty.all(
+                //           TextStyle(decoration: TextDecoration.underline))),
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         // （2） 実際に表示するページ(ウィジェット)を指定する
+                //         builder: (context) => SettingsPage(),
+                //       ),
+                //     );
+                //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                //   },
+                //   child: Text('設定画面へ'),
+                // )
+              ],
+            ),
+          ],
+        ),
+        duration: const Duration(seconds: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.only(left: 23, right: 23, bottom: 23),
+        behavior: SnackBarBehavior.floating,
+        showCloseIcon: true,
+      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(snackBar)
+          .closed
+          .then((reason) {
+        setState(() {
+          _isShowingSnackbar = false;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(200);
     final designH = screen.designH(200);
 
-    final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('ABC'),
+        // title: Text('TODOリスト編集'),
         actions: [
           IconButton(
             onPressed: () {},
@@ -71,47 +313,317 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('TODOリスト名'),
-                  SizedBox(
-                    height: 50,
-                    child: TextField(
-                      controller: _todoListNameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(width: 3)),
-                        hintText: 'TodoList名',
-                      ),
-                    ),
-                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      RoundButton(
-                        buttonName: 'キャンセル',
-                        buttonWidth: 150,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      const SizedBox(
-                        width: 25,
-                      ),
-                      RoundButton(
-                        buttonName: '決定する',
-                        buttonWidth: 150,
-                        onPressed: () {
-                          createTodoList(_todoListNameController.text, uid);
-                          // Navigator.pop(context);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) => HomePage(),
-                            ),
-                          );
-                        },
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16.0, 8.0, 0, 0),
+                        child: Text(
+                          'TODOリスト名',
+                          style: TextStyle(
+                            // fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey), // 枠線の色を設定
+                      // borderRadius: BorderRadius.all(
+                      //     Radius.circular(8.0)), // 枠線の角を丸める
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                            child: Text(
+                              todoList['TodoListName'],
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                // fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: !canEdit, // todoListIdが空の場合に表示
+                          child: IconButton(
+                            icon: Icon(Icons.edit_off), // 空の場合は追加アイコンを表示
+                            onPressed: () {
+                              // 追加アイコンがタップされたときの処理
+                              showSnackbar();
+                            },
+                          ),
+                        ),
+                        Visibility(
+                          visible: canEdit, // todoListIdが空でない場合に表示
+                          child: IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              _showEditDialog(todoList['TodoListName']);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Container(
+                  //   margin: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 0),
+                  //   child: SizedBox(
+                  //     height: 50,
+                  //     child: TextField(
+                  //       controller: _todoListNameController,
+                  //       decoration: const InputDecoration(
+                  //         border: OutlineInputBorder(
+                  //             borderSide: BorderSide(width: 3)),
+                  //         hintText: 'Todoリスト名を入力してください',
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  Expanded(
+                      child: FutureBuilder<Map<String, dynamic>>(
+                    future:
+                        TodoListDataService.getTodoListData(widget.todoListId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('error: ${snapshot.error}');
+                      } else {
+                        final userData = snapshot.data;
+                        final List<String> uidList = userData!['UserIDs'].cast<
+                            String>(); // Assuming 'uid' is a List<String> in userData
+                        // return ListView.builder(
+                        //   itemCount: uidList.length,
+                        //   itemBuilder: (context, index) {
+                        //     final uid = uidList[index];
+                        //     return FutureBuilder<DocumentSnapshot>(
+                        //       future: FirebaseFirestore.instance
+                        //           .collection('USER')
+                        //           .doc(uid)
+                        //           .get(),
+                        //       builder: (context, userSnapshot) {
+                        //         if (userSnapshot.connectionState ==
+                        //             ConnectionState.waiting) {
+                        //           return CircularProgressIndicator();
+                        //         } else if (userSnapshot.hasError) {
+                        //           return Text('error: ${userSnapshot.error}');
+                        //         } else {
+                        //           final userData = userSnapshot.data;
+                        //           // Do something with userData from USER collection
+                        //           return Text(userData!['UserName']);
+                        //         }
+                        //       },
+                        //     );
+                        //   },
+                        // );
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding:
+                                      EdgeInsets.fromLTRB(16.0, 8.0, 0, 4.0),
+                                  child: Text(
+                                    'TODOリストメンバー',
+                                    style: TextStyle(
+                                      // fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Expanded(
+                              child: Container(
+                                margin:
+                                    EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.grey), // 枠線の色を設定
+                                  // borderRadius: BorderRadius.all(
+                                  //     Radius.circular(8.0)), // 枠線の角を丸める
+                                ),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ListView.builder(
+                                          shrinkWrap:
+                                              true, // ListViewをコンテナの高さに合わせる
+                                          physics:
+                                              NeverScrollableScrollPhysics(), // スクロールを無効にする
+                                          itemCount: uidList.length,
+                                          itemBuilder: (context, index) {
+                                            final uid = uidList[index];
+                                            return FutureBuilder<
+                                                DocumentSnapshot>(
+                                              future: FirebaseFirestore.instance
+                                                  .collection('USER')
+                                                  .doc(uid)
+                                                  .get(),
+                                              builder: (context, userSnapshot) {
+                                                if (userSnapshot
+                                                        .connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return CircularProgressIndicator();
+                                                } else if (userSnapshot
+                                                    .hasError) {
+                                                  return Text(
+                                                      'error: ${userSnapshot.error}');
+                                                } else {
+                                                  final userData =
+                                                      userSnapshot.data;
+                                                  return ListTile(
+                                                    leading: CircleAvatar(
+                                                      // 画像を表示するなど、アイコンにしたいものを設定
+                                                      // e.g., backgroundImage: NetworkImage(userData['imageUrl']),
+                                                      child: Text(userData![
+                                                          'UserName']), // ユーザー名の最初の文字を表示
+                                                    ),
+                                                    title: Text(userData[
+                                                        'UserName']), // ユーザー名を表示
+                                                    subtitle: Text(userData[
+                                                        'UserName']), // メールアドレスを表示
+                                                    trailing: Visibility(
+                                                      visible: uid ==
+                                                          todoList[
+                                                              'Administrator'], // todoListIdが空の場合に表示
+                                                      child: Icon(
+                                                        Icons.emoji_events,
+                                                        color: Colors
+                                                            .amber.shade600,
+                                                      ),
+                                                    ),
+                                                    // タップされたときの動作を設定
+                                                    onTap: () {
+                                                      // タップされたときの処理を記述
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          _showInviteDialog();
+                                        },
+                                        child: Text('招待'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  )),
+                  //     child: FutureBuilder<Map<String, dynamic>>(
+                  //   future:
+                  //       TodoListDataService.getTodoListData(widget.todoListId),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return CircularProgressIndicator();
+                  //     } else if (snapshot.hasError) {
+                  //       return Text('error: ${snapshot.error}');
+                  //     } else {
+                  //       final userData = snapshot.data;
+
+                  //       return Text(userData.toString());
+                  //     }
+                  //   },
+                  // )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16.0, 0.0, 0, 0),
+                        child: Text(
+                          '管理者設定',
+                          style: TextStyle(
+                            // fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey), // 枠線の色を設定
+                      // borderRadius: BorderRadius.all(
+                      //     Radius.circular(8.0)), // 枠線の角を丸める
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0),
+                      child: Row(
+                        children: [
+                          Text('メンバーがTODOリスト名を変更できる'),
+                          Expanded(
+                            child: Container(),
+                          ),
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: todoList['Administrator'] == uid
+                                ? (value) {
+                                    setState(() {
+                                      isChecked = value!; // チェックボックスに渡す値を更新する
+                                      TodoListDataService
+                                          .updateTodoListEditingPermission(
+                                              widget.todoListId, value);
+                                    });
+                                  }
+                                : null, // チェックボックスのonChangedをnullに設定することで無効にする
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     RoundButton(
+                  //       buttonName: 'キャンセル',
+                  //       buttonWidth: 150,
+                  //       onPressed: () {
+                  //         Navigator.pop(context);
+                  //       },
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 25,
+                  //     ),
+                  //     RoundButton(
+                  //       buttonName: '決定する',
+                  //       buttonWidth: 150,
+                  //       onPressed: () {
+                  //         createTodoList(_todoListNameController.text, uid);
+                  //         // Navigator.pop(context);
+                  //         Navigator.pushReplacement(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //             builder: (BuildContext context) => HomePage(),
+                  //           ),
+                  //         );
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

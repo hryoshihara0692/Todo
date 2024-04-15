@@ -204,6 +204,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         Map<String, dynamic> todolistRow = {
           "TodoListName": "マイリスト",
           "Administrator": uid,
+          "UserIDs": [uid],
           "EditingPermission": 0,
           "CreatedAt": Timestamp.fromDate(DateTime.now()),
           "UpdatedAt": Timestamp.fromDate(DateTime.now()),

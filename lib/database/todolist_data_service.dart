@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:todo/database/user_data_service.dart';
 
 class TodoListDataService {
   static Future<Map<String, dynamic>> getTodoListData(String todoListID) async {
@@ -42,5 +43,50 @@ class TodoListDataService {
         .collection('TODOLIST')
         .doc(todolistId)
         .set(todolistData);
+  }
+
+  ///
+  /// FirestoreのTodoの内容更新
+  ///
+  static Future<void> updateTodoListName(
+      String todolistId, String todoListName, List<String> userIDs) async {
+    await FirebaseFirestore.instance
+        .collection('TODOLIST')
+        .doc(todolistId)
+        .update({
+      'TodoListName': todoListName,
+      'UpdatedAt': Timestamp.fromDate(DateTime.now()),
+    }).then((_) {
+      // 更新が成功した場合の処理
+      print('Field updated successfully.');
+    }).catchError((error) {
+      // 更新が失敗した場合のエラーハンドリング
+      print('Failed to update field : $error');
+    });
+
+    userIDs.forEach((element) async {
+      await UserDataService.updateUserTodoListsEasy(element, todolistId, todoListName);
+     });
+  }
+
+  ///
+  /// FirestoreのTodoの内容更新
+  ///
+  static Future<void> updateTodoListEditingPermission(
+      String todolistId, bool editingPermission) async {
+    int editingPermissionNumber = editingPermission ? 1 : 0;
+    await FirebaseFirestore.instance
+        .collection('TODOLIST')
+        .doc(todolistId)
+        .update({
+      'EditingPermission': editingPermissionNumber,
+      'UpdatedAt': Timestamp.fromDate(DateTime.now()),
+    }).then((_) {
+      // 更新が成功した場合の処理
+      print('Field updated successfully.');
+    }).catchError((error) {
+      // 更新が失敗した場合のエラーハンドリング
+      print('Failed to update field : $error');
+    });
   }
 }

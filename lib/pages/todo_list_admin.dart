@@ -60,6 +60,102 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
     prefs.setStringList(todoListOrderSPKeyName, todoListOrder);
   }
 
+  void _showJoinDialog() {
+    TextEditingController _controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("TODOリストにメンバーを参加する"),
+          content: Column(
+            children: [
+              Text('TODOリストID'),
+              // Text(todoListName),
+              Container(
+                margin: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey), // 枠線の色を設定
+                  // borderRadius: BorderRadius.all(
+                  //     Radius.circular(8.0)), // 枠線の角を丸める
+                ),
+                // child: Text(widget.todoListId),
+                child: Text('a'),
+              ),
+              // TextButton(
+              //   style: ButtonStyle(
+              //       foregroundColor: MaterialStateProperty.all(
+              //         Colors.blue,
+              //       ),
+              //       textStyle: MaterialStateProperty.all(
+              //           TextStyle(decoration: TextDecoration.underline))),
+              //   onPressed: () async {
+              //     final data = ClipboardData(text: widget.todoListId);
+              //     await Clipboard.setData(data);
+              //   },
+              //   child: Text('IDコピー'),
+              // ),
+              Text('↑のIDを、招待する人に教えて下さい！'),
+              Text('※ホーム→TODOリスト管理→参加の画面に入力します'),
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: "Todo List Name",
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("閉じる"),
+            ),
+            TextButton(
+              onPressed: () async {
+                // setState(() {
+                //   todoListName = _controller.text;
+                // });
+                // await TodoListDataService.updateTodoListName(
+                //     widget.todoListId, todoListName);
+                String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
+
+                try {
+                  await UserDataService.updateUserTodoLists(
+                      uid!, _controller.text);
+                  // メソッドがエラーなく正常に完了した場合の処理
+                } catch (e) {
+                  print('エラーが発生しました: $e');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => HomePage(),
+                    ),
+                  );
+                  // エラーが発生した場合の処理
+                }
+
+                try {
+
+                } catch (e) {
+
+                }
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (BuildContext context) =>
+                //         TodoListEditPage(todoListId: widget.todoListId),
+                //   ),
+                // );
+              },
+              child: Text("参加する"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
@@ -219,7 +315,45 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                                       children: [
                                         IconButton(
                                           icon: Icon(Icons.edit),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              PageRouteBuilder(
+                                                pageBuilder: (context,
+                                                    animation,
+                                                    secondaryAnimation) {
+                                                  return TodoListEditPage(
+                                                    todoListId: todoListID,
+                                                  );
+                                                },
+                                                transitionsBuilder: (context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                    child) {
+                                                  // 右から左
+                                                  final Offset begin =
+                                                      Offset(1.0, 0.0);
+                                                  // 左から右
+                                                  // final Offset begin = Offset(-1.0, 0.0);
+                                                  final Offset end =
+                                                      Offset.zero;
+                                                  final Animatable<Offset>
+                                                      tween = Tween(
+                                                              begin: begin,
+                                                              end: end)
+                                                          .chain(CurveTween(
+                                                              curve: Curves
+                                                                  .easeInOut));
+                                                  final Animation<Offset>
+                                                      offsetAnimation =
+                                                      animation.drive(tween);
+                                                  return SlideTransition(
+                                                    position: offsetAnimation,
+                                                    child: child,
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
                                         ),
                                         IconButton(
                                           icon: Icon(Icons.delete),
@@ -324,7 +458,41 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                                         entry.value.value), // ソートされたエントリの値を表示
                                     trailing: IconButton(
                                       icon: Icon(Icons.edit),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation,
+                                                secondaryAnimation) {
+                                              return TodoListEditPage(
+                                                todoListId: todoListID,
+                                              );
+                                            },
+                                            transitionsBuilder: (context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child) {
+                                              // 右から左
+                                              final Offset begin =
+                                                  Offset(1.0, 0.0);
+                                              // 左から右
+                                              // final Offset begin = Offset(-1.0, 0.0);
+                                              final Offset end = Offset.zero;
+                                              final Animatable<Offset> tween =
+                                                  Tween(begin: begin, end: end)
+                                                      .chain(CurveTween(
+                                                          curve: Curves
+                                                              .easeInOut));
+                                              final Animation<Offset>
+                                                  offsetAnimation =
+                                                  animation.drive(tween);
+                                              return SlideTransition(
+                                                position: offsetAnimation,
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 );
@@ -383,6 +551,29 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                       children: [
                         Icon(Icons.post_add),
                         Text(' TODOリスト追加 '),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FloatingActionButton(
+                    // focusColor: Colors.red,
+                    // hoverColor: Colors.blue,
+                    splashColor: Colors.green,
+                    backgroundColor: Colors.yellow,
+                    // foregroundColor: Colors.black,
+                    onPressed: () {
+                      _showJoinDialog();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.post_add),
+                        Text(' TODOリスト参加 '),
                       ],
                     ),
                   ),
