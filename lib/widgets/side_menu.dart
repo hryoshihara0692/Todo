@@ -267,7 +267,7 @@ class SideMenu extends StatelessWidget {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) {
-                                  return HomePage();
+                                  return UserAdminPage(isNewAccount: false);
                                 },
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {

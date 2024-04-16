@@ -2,12 +2,10 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:todo/database/database_helper.dart';
 import 'package:todo/database/todo_item.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/widgets/admob_banner.dart';
-import 'package:todo/widgets/home/todolist_firestore.dart';
-import 'package:todo/widgets/home/todolist_sqflite.dart';
+import 'package:todo/widgets/todolist_firestore.dart';
 import 'package:todo/widgets/side_menu.dart';
 import 'package:todo/pages/settings.dart';
 
@@ -23,9 +21,10 @@ class _HomePageState extends State<HomePage> {
   //User
   final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
 
+  User? user = FirebaseAuth.instance.currentUser;
+
   //DB
   List<TodoItem> todoItemsList = [];
-  final dbHelper = DatabaseHelper.instance;
 
   /**
    * Todoソート
@@ -52,6 +51,34 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _initSharedPreferencesData();
+    print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥');
+    print(user);
+    if (user != null) {
+      if (user!.isAnonymous) {
+        print('匿名でログインしています');
+      } else {
+        user!.providerData.forEach((provider) {
+          switch (provider.providerId) {
+            case 'password':
+              print('メールアドレスとパスワードで認証されました');
+              break;
+            case 'google.com':
+              print('Googleアカウントで認証されました');
+              break;
+            case 'apple.com':
+              print('Appleアカウントで認証されました');
+              break;
+            default:
+              print('未知の認証プロバイダ: ${provider.providerId}');
+              break;
+          }
+        });
+      }
+    } else {
+      print('ユーザーはログインしていません');
+    }
+    print(uid);
+    print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥');
   }
 
   //画面消失時動作
@@ -95,9 +122,9 @@ class _HomePageState extends State<HomePage> {
       _selectedTodoListId = selectedTodoListId!;
       // });
     } else {
-      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
-      print('ありません))))))))))))');
-      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // print('ありません))))))))))))');
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
       final userData = await UserDataService.getUserData(uid!);
       final todoLists = userData['TodoLists'];
       setState(() {
@@ -109,9 +136,9 @@ class _HomePageState extends State<HomePage> {
         }
       });
 
-      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
-      print(_selectedTodoListId);
-      print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
+      // print(_selectedTodoListId);
+      // print('||||||||||||||||||||||||||||||||||||||||||||||||||||');
       // setState(() {
       //   final todoLists = userData['TodoLists'];
       //   if (todoLists != null) {
@@ -311,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                       sortColumnTodoValue: _sortColumnTodoValue,
                       descendingTodoValue: _descendingTodoValue,
                     )
-                  : Text('TodoListSqflite()'),
+                  : Text('error'),
               // Admob
               AdMobBanner(),
             ],
