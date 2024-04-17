@@ -39,57 +39,461 @@ class _UserAdminPageState extends State<UserAdminPage> {
     _adMob.dispose();
   }
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(200);
     final designH = screen.designH(400);
 
-    return DefaultTabController(
-      initialIndex: initialTabIndex,
-      length: 2,
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(designH),
-            child: AppBar(
-              automaticallyImplyLeading: false,
-              // backgroundColor: Colors.brown,
-              // leading: IconButton(
-              //   icon: Icon(Icons.arrow_back),
-              //   onPressed: () {
-              //     Navigator.of(context).pop();
-              //   },
-              // ),
-              flexibleSpace: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    // width: designW,
-                    height: screen.designH(250),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue,
-                    ),
-                    margin: const EdgeInsets.fromLTRB(0, 50, 0, 50),
-                    // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: const Center(child: Text('Flex 1')),
+    return Stack(
+      children: [
+        DefaultTabController(
+          initialIndex: initialTabIndex,
+          length: 2,
+          child: PopScope(
+            canPop: false,
+            child: Scaffold(
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(designH),
+                child: AppBar(
+                  automaticallyImplyLeading: false,
+                  // backgroundColor: Colors.brown,
+                  // leading: IconButton(
+                  //   icon: Icon(Icons.arrow_back),
+                  //   onPressed: () {
+                  //     Navigator.of(context).pop();
+                  //   },
+                  // ),
+                  flexibleSpace: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        // width: designW,
+                        height: screen.designH(250),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.blue,
+                        ),
+                        margin: const EdgeInsets.fromLTRB(0, 50, 0, 50),
+                        // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: const Center(child: Text('Flex 1')),
+                      ),
+                      Container(
+                        // color: Colors.amber,
+                        height: kToolbarHeight,
+                        child: TabBar(
+                          // indicatorSize: ,
+                          indicatorColor: Colors.blue,
+                          labelColor: Colors.black,
+                          tabs: [
+                            Tab(
+                              text: 'ログイン',
+                            ),
+                            Tab(
+                              text: '新規登録',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+              ),
+              body: TabBarView(
+                children: [
+                  ///
+                  /// ログイン側
+                  ///
                   Container(
-                    // color: Colors.amber,
-                    height: kToolbarHeight,
-                    child: TabBar(
-                      // indicatorSize: ,
-                      indicatorColor: Colors.blue,
-                      labelColor: Colors.black,
-                      tabs: [
-                        Tab(
-                          text: 'ログイン',
+                    // color: Colors.green,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                // color: Colors.amber,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.appleDark,
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.white,
+                                  btnColor: Colors.black,
+                                  width: 300,
+                                  btnText: 'AppleID でログイン',
+                                  onPressed: () async {
+                                    await _handleSignInWithApple();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.blueAccent,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.google,
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.black87,
+                                  btnColor: Colors.white,
+                                  width: 300,
+                                  btnText: 'Google でログイン',
+                                  onPressed: () async {
+                                    await _handleSignInWithGoogle();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.deepOrange,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  // buttonType: ButtonType.mail,
+                                  buttonType: ButtonType.custom,
+                                  customImage:
+                                      CustomImage('assets/images/mail.png'),
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnColor: Color.fromARGB(255, 202, 233, 248),
+                                  btnTextColor: Colors.black87,
+                                  width: 300,
+                                  btnText: 'メールアドレスでログイン',
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return LoginPage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.blueAccent,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.custom,
+                                  //アプリのアイコンを設定する！！
+                                  customImage:
+                                      CustomImage('assets/images/mail.png'),
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.black87,
+                                  btnColor: Colors.white,
+                                  width: 300,
+                                  btnText: 'ゲストとして利用する',
+                                  onPressed: () async {
+                                    await signInAnonymous();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        Tab(
-                          text: '新規登録',
+                        AdMobBanner(),
+                      ],
+                    ),
+                  ),
+
+                  ///
+                  /// 登録側
+                  ///
+                  Container(
+                    // color: Colors.green,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                // color: Colors.amber,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.appleDark,
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.white,
+                                  btnColor: Colors.black,
+                                  width: 300,
+                                  btnText: 'AppleID で登録',
+                                  onPressed: () async {
+                                    await _handleSignInWithApple();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.blueAccent,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.google,
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.black87,
+                                  btnColor: Colors.white,
+                                  width: 300,
+                                  btnText: 'Google で登録',
+                                  onPressed: () async {
+                                    await _handleSignInWithGoogle();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.deepOrange,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  // buttonType: ButtonType.mail,
+                                  buttonType: ButtonType.custom,
+                                  customImage:
+                                      CustomImage('assets/images/mail.png'),
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnColor: Color.fromARGB(255, 202, 233, 248),
+                                  btnTextColor: Colors.black54,
+                                  width: 300,
+                                  btnText: 'メールアドレスで登録',
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return CreateAccountPage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                // color: Colors.blueAccent,
+                                margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                child: SignInButton(
+                                  buttonType: ButtonType.google,
+                                  imagePosition: ImagePosition.left,
+                                  buttonSize: ButtonSize.large,
+                                  btnTextColor: Colors.black87,
+                                  btnColor: Colors.white,
+                                  width: 300,
+                                  btnText: 'ゲストとして利用する',
+                                  onPressed: () async {
+                                    await signInAnonymous();
+                                    await checkUserCollection();
+                                    Navigator.of(context).pushReplacement(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return HomePage();
+                                        },
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          // 右から左
+                                          final Offset begin = Offset(1.0, 0.0);
+                                          // 左から右
+                                          // final Offset begin = Offset(-1.0, 0.0);
+                                          final Offset end = Offset.zero;
+                                          final Animatable<Offset> tween =
+                                              Tween(begin: begin, end: end)
+                                                  .chain(CurveTween(
+                                                      curve: Curves.easeInOut));
+                                          final Animation<Offset>
+                                              offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        AdMobBanner(),
                       ],
                     ),
                   ),
@@ -97,394 +501,34 @@ class _UserAdminPageState extends State<UserAdminPage> {
               ),
             ),
           ),
-          body: TabBarView(
-            children: [
-              ///
-              /// ログイン側
-              ///
-              Container(
-                // color: Colors.green,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            // color: Colors.amber,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.appleDark,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.white,
-                              btnColor: Colors.black,
-                              width: 300,
-                              btnText: 'AppleID でログイン',
-                              onPressed: () async {
-                                await signInWithApple();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.blueAccent,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.google,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.black87,
-                              btnColor: Colors.white,
-                              width: 300,
-                              btnText: 'Google でログイン',
-                              onPressed: () async {
-                                await signInWithGoogle();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.deepOrange,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              // buttonType: ButtonType.mail,
-                              buttonType: ButtonType.custom,
-                              customImage: CustomImage('assets/images/mail.png'),
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnColor: Color.fromARGB(255, 202, 233, 248),
-                              btnTextColor: Colors.black87,
-                              width: 300,
-                              btnText: 'メールアドレスでログイン',
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return LoginPage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.blueAccent,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.google,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.black87,
-                              btnColor: Colors.white,
-                              width: 300,
-                              btnText: 'ゲストとして利用する',
-                              onPressed: () async {
-                                await signInAnonymous();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AdMobBanner(),
-                  ],
-                ),
-              ),
-
-              ///
-              /// 登録側
-              ///
-              Container(
-                // color: Colors.green,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            // color: Colors.amber,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.appleDark,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.white,
-                              btnColor: Colors.black,
-                              width: 300,
-                              btnText: 'AppleID で登録',
-                              onPressed: () async {
-                                await signInWithApple();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.blueAccent,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.google,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.black87,
-                              btnColor: Colors.white,
-                              width: 300,
-                              btnText: 'Google で登録',
-                              onPressed: () async {
-                                await signInWithGoogle();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.deepOrange,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              // buttonType: ButtonType.mail,
-                              buttonType: ButtonType.custom,
-                              customImage: CustomImage('assets/images/mail.png'),
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnColor: Color.fromARGB(255, 202, 233, 248),
-                              btnTextColor: Colors.black54,
-                              width: 300,
-                              btnText: 'メールアドレスで登録',
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return CreateAccountPage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            // color: Colors.blueAccent,
-                            margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: SignInButton(
-                              buttonType: ButtonType.google,
-                              imagePosition: ImagePosition.left,
-                              buttonSize: ButtonSize.large,
-                              btnTextColor: Colors.black87,
-                              btnColor: Colors.white,
-                              width: 300,
-                              btnText: 'ゲストとして利用する',
-                              onPressed: () async {
-                                await signInAnonymous();
-                                await checkUserCollection();
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return HomePage();
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // 右から左
-                                      final Offset begin = Offset(1.0, 0.0);
-                                      // 左から右
-                                      // final Offset begin = Offset(-1.0, 0.0);
-                                      final Offset end = Offset.zero;
-                                      final Animatable<Offset> tween =
-                                          Tween(begin: begin, end: end).chain(
-                                              CurveTween(
-                                                  curve: Curves.easeInOut));
-                                      final Animation<Offset> offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AdMobBanner(),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
-      ),
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5), // 半透明の黒色
+            child: Center(
+              child: CircularProgressIndicator(), // ローディングインジケーター
+            ),
+          ),
+      ],
     );
+  }
+
+  Future<void> _handleSignInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await signInWithGoogle();
+      // ログイン成功後の処理
+    } catch (e) {
+      // エラー処理
+      print("Google Sign In Error: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   // Future<UserCredential> signInWithGoogle() async {
@@ -578,6 +622,24 @@ class _UserAdminPageState extends State<UserAdminPage> {
             },
           );
     } else {}
+  }
+
+  Future<void> _handleSignInWithApple() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await signInWithApple();
+      // ログイン成功後の処理
+    } catch (e) {
+      // エラー処理
+      print("Apple Sign In Error: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<UserCredential> signInWithApple() async {
