@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sign_button/sign_button.dart';
+import 'package:todo/database/todo_data_service.dart';
+import 'package:todo/database/todolist_data_service.dart';
+import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
 import 'package:todo/pages/create_account.dart';
 import 'package:todo/pages/login.dart';
@@ -12,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:uuid/uuid.dart';
 
 class UserAdminPage extends StatefulWidget {
   final bool isNewAccount;
@@ -591,37 +595,83 @@ class _UserAdminPageState extends State<UserAdminPage> {
     /// 取得したuidでTodoListIDを生成して登録する処理を追加予定
     ///
     if (uid != null) {
-      String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
-      Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
-      final _movieRef = FirebaseFirestore.instance.collection('USER').doc(uid);
-      await _movieRef.get().then(
-            (docSnapshot) => {
-              if (docSnapshot.exists)
-                {
-                  // 既に登録されているドキュメントの場合
-                  print('追加しない')
-                }
-              else
-                {
-                  // // 登録されてない新しいドキュメントの場合
-                  // FirebaseFirestore.instance
-                  //     .collection('USER')
-                  //     .doc(uid)
-                  //     .set({'id': movieId, 'title': title})
-                  //     .then(
-                  //       (value) => print('追加しました'),
-                  //     )
-                  //     .catchError((error) {
-                  //       print('追加失敗！')
-                  //     }),
-                  FirebaseFirestore.instance
-                      .collection('USER')
-                      .doc(uid)
-                      .set(data)
-                }
-            },
-          );
-    } else {}
+      String todoListID =
+          DateFormat('yyyyMMddHHmmss').format(DateTime.now()) + '-' + uid;
+
+      // USERコレクション用データ
+      Map<String, dynamic> userRow = {
+        //UserName取得
+        "UserName": 'userName',
+        "TodoLists": {todoListID: "マイリスト"},
+        "CreatedAt": Timestamp.fromDate(DateTime.now()),
+        "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+        "IconNo": '001',
+        "IconFileName": "",
+      };
+
+      // USERコレクションにドキュメント追加
+      await UserDataService.createUserData(uid, userRow);
+
+      Map<String, dynamic> todolistRow = {
+        "TodoListName": "マイリスト",
+        "Administrator": uid,
+        "UserIDs": [uid],
+        "EditingPermission": 0,
+        "CreatedAt": Timestamp.fromDate(DateTime.now()),
+        "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+      };
+
+      // TODOLISTコレクションにドキュメント追加
+      await TodoListDataService.createTodoListData(todoListID, todolistRow);
+
+      var uuid = Uuid();
+      var todoId = uuid.v4();
+
+      Map<String, dynamic> todoRow = {
+        "Content": "",
+        "isChecked": 0,
+        "CreatedAt": Timestamp.fromDate(DateTime.now()),
+        "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+      };
+
+      // TODOコレクションにドキュメント追加
+      await TodoDataService.createTodoData(todoListID, todoId, todoRow);
+
+      // Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
+      // await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
+
+      //   String date = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+      //   Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
+      //   final _movieRef = FirebaseFirestore.instance.collection('USER').doc(uid);
+      //   await _movieRef.get().then(
+      //         (docSnapshot) => {
+      //           if (docSnapshot.exists)
+      //             {
+      //               // 既に登録されているドキュメントの場合
+      //               print('追加しない')
+      //             }
+      //           else
+      //             {
+      //               // // 登録されてない新しいドキュメントの場合
+      //               // FirebaseFirestore.instance
+      //               //     .collection('USER')
+      //               //     .doc(uid)
+      //               //     .set({'id': movieId, 'title': title})
+      //               //     .then(
+      //               //       (value) => print('追加しました'),
+      //               //     )
+      //               //     .catchError((error) {
+      //               //       print('追加失敗！')
+      //               //     }),
+      //               FirebaseFirestore.instance
+      //                   .collection('USER')
+      //                   .doc(uid)
+      //                   .set(data)
+      //             }
+      //         },
+      //       );
+      // } else {}
+    }
   }
 
   Future<void> _handleSignInWithApple() async {
