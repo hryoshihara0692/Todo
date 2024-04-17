@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sign_button/sign_button.dart';
@@ -597,11 +599,15 @@ class _UserAdminPageState extends State<UserAdminPage> {
     if (uid != null) {
       String todoListID =
           DateFormat('yyyyMMddHHmmss').format(DateTime.now()) + '-' + uid;
+      Random random = Random();
+      int randomNumber = random.nextInt(1000000);
+      String sixDigitRandomNumber = randomNumber.toString().padLeft(6, '0');
+      String userName = 'アプリ名$sixDigitRandomNumber';
 
       // USERコレクション用データ
       Map<String, dynamic> userRow = {
         //UserName取得
-        "UserName": 'userName',
+        "UserName": userName,
         "TodoLists": {todoListID: "マイリスト"},
         "CreatedAt": Timestamp.fromDate(DateTime.now()),
         "UpdatedAt": Timestamp.fromDate(DateTime.now()),

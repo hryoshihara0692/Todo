@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  final FocusNode _idFocusNode = FocusNode(); // 追加: フォーカスノード
 
   final AdMob _adMob = AdMob();
 
@@ -25,6 +26,10 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _adMob.load();
+    // 追加: テキストフィールドにフォーカスを当てる
+    Future.delayed(Duration.zero, () {
+      _idFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -101,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 50,
                           child: TextField(
                             controller: _idController,
+                            focusNode: _idFocusNode, // 追加: フォーカスノードを設定
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(width: 3)),

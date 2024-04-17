@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/database/todo_data_service.dart';
@@ -22,6 +24,7 @@ class CreateAccountPage extends StatefulWidget {
 class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  final FocusNode _idFocusNode = FocusNode(); // 追加: フォーカスノード
 
   final AdMob _adMob = AdMob();
 
@@ -29,6 +32,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   void initState() {
     super.initState();
     _adMob.load();
+    // 追加: テキストフィールドにフォーカスを当てる
+    Future.delayed(Duration.zero, () {
+      _idFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -41,7 +48,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     final designW = screen.designW(200);
-    final designH = screen.designH(200);
+    final designH = screen.designH(50);
 
     return DefaultTabController(
       length: 1,
@@ -59,17 +66,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  // width: designW,
-                  height: screen.designH(125),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blue,
-                  ),
-                  margin: const EdgeInsets.fromLTRB(0, 25, 0, 0),
-                  // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: const Center(child: Text('Flex 1')),
-                ),
+                // Container(
+                //   // width: designW,
+                //   height: screen.designH(125),
+                //   decoration: const BoxDecoration(
+                //     shape: BoxShape.circle,
+                //     color: Colors.blue,
+                //   ),
+                //   margin: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+                //   // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                //   child: const Center(child: Text('Flex 1')),
+                // ),
                 Container(
                   // color: Colors.amber,
                   height: kToolbarHeight,
@@ -98,63 +105,92 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 25,
-                        ),
-                        SizedBox(
-                          height: 50,
-                          child: TextField(
-                            controller: _idController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(width: 3)),
-                              hintText: 'mail_address@sample.com',
-                              labelText: 'メールアドレス',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 25.0,
-                        ),
-                        SizedBox(
-                          height: 50,
-                          child: TextField(
-                            controller: _passController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(width: 3)),
-                              hintText: 'ex) Password1234',
-                              labelText: 'パスワード',
-                            ),
-                            obscureText: true,
-                            obscuringCharacter: '*',
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 25.0,
-                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            RoundButton(
-                              buttonName: 'キャンセル',
-                              buttonWidth: 150,
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            const SizedBox(
-                              width: 25,
-                            ),
-                            RoundButton(
-                              buttonName: '登録する',
-                              buttonWidth: 150,
-                              onPressed: () {
-                                _createAccount(context, _idController.text,
-                                    _passController.text, 'AOYAGI');
-                              },
+                            Container(
+                              margin:
+                                  EdgeInsets.fromLTRB(32.0, 16.0, 16.0, 8.0),
+                              child: Text('メールアドレス'),
                             ),
                           ],
+                        ),
+                        // SizedBox(
+                        //   height: 25,
+                        // ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                          child: SizedBox(
+                            height: 50,
+                            child: TextField(
+                              controller: _idController,
+                              focusNode: _idFocusNode, // 追加: フォーカスノードを設定
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(width: 3)),
+                                hintText: '\u{2709}  sample@todolist.com',
+                                // labelText: 'メールアドレス',
+                              ),
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(
+                        //   height: 25.0,
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(32.0, 8.0, 16.0, 8.0),
+                              child: Text('パスワード'),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                          child: SizedBox(
+                            height: 50,
+                            child: TextField(
+                              controller: _passController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(width: 3)),
+                                hintText: '\u{1F511}  パスワードを入力',
+                                // labelText: 'パスワード',
+                              ),
+                              obscureText: true,
+                              obscuringCharacter: '*',
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(
+                        //   height: 25.0,
+                        // ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RoundButton(
+                                buttonName: 'キャンセル',
+                                buttonWidth: 150,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              // const SizedBox(
+                              //   width: 25,
+                              // ),
+                              RoundButton(
+                                buttonName: '登録する',
+                                buttonWidth: 150,
+                                onPressed: () {
+                                  _createAccount(context, _idController.text,
+                                      _passController.text);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -169,7 +205,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     );
   }
 
-  void _createAccount(BuildContext context, String id, String pass, String userName) async {
+  void _createAccount(BuildContext context, String id, String pass) async {
     try {
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -187,6 +223,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       if (uid != null) {
         String todoListID =
             DateFormat('yyyyMMddHHmmss').format(DateTime.now()) + '-' + uid;
+        Random random = Random();
+        int randomNumber = random.nextInt(1000000);
+        String sixDigitRandomNumber = randomNumber.toString().padLeft(6, '0');
+        String userName = 'アプリ名$sixDigitRandomNumber';
 
         // USERコレクション用データ
         Map<String, dynamic> userRow = {
@@ -225,7 +265,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
         // TODOコレクションにドキュメント追加
         await TodoDataService.createTodoData(todoListID, todoId, todoRow);
-
 
         // Map<String, dynamic> data = {date + '-' + uid: 'マイリスト'};
         // await FirebaseFirestore.instance.collection('USER').doc(uid).set(data);
