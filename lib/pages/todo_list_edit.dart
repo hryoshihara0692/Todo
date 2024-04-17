@@ -7,6 +7,7 @@ import 'package:todo/database/todo_data_service.dart';
 import 'package:todo/database/todolist_data_service.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
+import 'package:todo/pages/todo_list_admin.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:todo/components/ad_mob.dart';
 import 'package:todo/widgets/admob_banner.dart';
@@ -219,6 +220,106 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
     );
   }
 
+  void _showDeleteDialog() {
+    // TextEditingController _controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("TODOリストを削除する"),
+          content: Column(
+            children: [
+              Text('TODOリストに登録されている各TODOも削除されます。'),
+              Text('TODOリストの削除後、復元することはできません。'),
+              Text('TODOリストに参加しているメンバーからも見えなくなります。'),
+              // Text('変更後のTODOリスト名'),
+              // TextField(
+              //   controller: _controller,
+              //   decoration: InputDecoration(
+              //     labelText: "Todo List Name",
+              //   ),
+              // ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("キャンセル"),
+            ),
+            TextButton(
+              onPressed: () async {
+                // setState(() {
+                //   todoListName = _controller.text;
+                // });
+
+                final userData = await TodoListDataService.getTodoListData(
+                    widget.todoListId);
+                final List<String> uidList = userData['UserIDs'].cast<String>();
+
+                //Userコレクションの該当のユーザデータから、本TODOリストのデータを削除する
+                uidList.forEach((element) async {
+                  if (element != uid) {
+                    await UserDataService.removeTodoListFromUser(
+                        uid!, widget.todoListId);
+                  }
+                });
+
+                await TodoListDataService.deleteTodoListData(widget.todoListId);
+
+                //マイリスト削除した場合は、マイリスト再作成
+                if (widget.todoListId.contains(uid!)) {
+                  String todoListID =
+                      DateFormat('yyyyMMddHHmmss').format(DateTime.now()) +
+                          '-' +
+                          uid!;
+
+                  Map<String, dynamic> todolistRow = {
+                    "TodoListName": "マイリスト",
+                    "Administrator": uid,
+                    "UserIDs": [uid],
+                    "EditingPermission": 0,
+                    "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                    "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                  };
+
+                  // TODOLISTコレクションにドキュメント追加
+                  await TodoListDataService.createTodoListData(
+                      todoListID, todolistRow);
+
+                  var uuid = Uuid();
+                  var todoId = uuid.v4();
+
+                  Map<String, dynamic> todoRow = {
+                    "Content": "",
+                    "isChecked": 0,
+                    "CreatedAt": Timestamp.fromDate(DateTime.now()),
+                    "UpdatedAt": Timestamp.fromDate(DateTime.now()),
+                  };
+
+                  // TODOコレクションにドキュメント追加
+                  await TodoDataService.createTodoData(
+                      todoListID, todoId, todoRow);
+
+                  await UserDataService.updateUserTodoListsEasy(uid!, todoListID, 'マイリスト');
+                }
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => TodoListAdminPage(),
+                  ),
+                );
+              },
+              child: Text("変更する"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   bool _isShowingSnackbar = false;
 
   // void showDeleteButtonSnackbar(String deleteButtonModeName) {
@@ -301,7 +402,9 @@ class _TodoListEditPageState extends State<TodoListEditPage> {
         // title: Text('TODOリスト編集'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showDeleteDialog();
+            },
             icon: Icon(Icons.delete),
           ),
         ],

@@ -65,8 +65,9 @@ class TodoListDataService {
     });
 
     userIDs.forEach((element) async {
-      await UserDataService.updateUserTodoListsEasy(element, todolistId, todoListName);
-     });
+      await UserDataService.updateUserTodoListsEasy(
+          element, todolistId, todoListName);
+    });
   }
 
   ///
@@ -87,6 +88,18 @@ class TodoListDataService {
     }).catchError((error) {
       // 更新が失敗した場合のエラーハンドリング
       print('Failed to update field : $error');
+    });
+  }
+
+  static Future<void> deleteTodoListData(String todolistId) async {
+    FirebaseFirestore.instance
+        .collection('TODOLIST')
+        .doc(todolistId)
+        .delete()
+        .then((value) {
+      print('Document with ID $todolistId deleted successfully.');
+    }).catchError((error) {
+      print('Failed to delete document: $error');
     });
   }
 }

@@ -163,6 +163,48 @@ class UserDataService {
     }
   }
 
+static Future<void> removeTodoListFromUser(String uid, String todoListID) async {
+  final userDocRef = FirebaseFirestore.instance.collection('USER').doc(uid);
+
+  // ドキュメントのデータを取得して更新
+  userDocRef.get().then((doc) {
+    if (doc.exists) {
+      // 既存のデータを取得
+      final userData = doc.data() as Map<String, dynamic>;
+
+      // 既存のTodoListsを取得
+      final todoLists = Map<String, dynamic>.from(userData['TodoLists'] ?? {});
+
+      // 指定されたtodoListIDをキーとするエントリを削除
+      if (todoLists.containsKey(todoListID)) {
+        todoLists.remove(todoListID);
+
+        // 更新するデータを準備
+        final updatedData = {
+          'TodoLists': todoLists,
+          'UpdatedAt': Timestamp.fromDate(DateTime.now()),
+        };
+
+        // 更新を実行
+        userDocRef.update(updatedData).then((_) {
+          // 更新が成功した場合の処理
+          print('TodoList removed successfully.');
+        }).catchError((error) {
+          // 更新が失敗した場合のエラーハンドリング
+          print('Failed to update field: $error');
+        });
+      } else {
+        print('TodoList with ID $todoListID does not exist.');
+      }
+    } else {
+      print('Document does not exist');
+    }
+  }).catchError((error) {
+    print('Failed to get document: $error');
+  });
+}
+
+
   ///
   /// FirestoreのTodoの内容更新
   ///
