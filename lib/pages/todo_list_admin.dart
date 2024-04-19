@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/database/user_data_service.dart';
 import 'package:todo/pages/home.dart';
+import 'package:todo/pages/todo_list_add.dart';
 import 'package:todo/pages/todo_list_edit.dart';
 import 'package:todo/screen_pod.dart';
 import 'package:todo/components/ad_mob.dart';
@@ -135,11 +136,7 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                   // エラーが発生した場合の処理
                 }
 
-                try {
-
-                } catch (e) {
-
-                }
+                try {} catch (e) {}
                 // Navigator.pushReplacement(
                 //   context,
                 //   MaterialPageRoute(
@@ -522,9 +519,7 @@ class _TodoListAdminPageState extends State<TodoListAdminPage> {
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) {
-                            return TodoListEditPage(
-                              todoListId: '',
-                            );
+                            return TodoListAddPage();
                           },
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
