@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Project imports:
 import 'package:todo/database/todo_item.dart';
 import 'package:todo/database/user_data_service.dart';
+import 'package:todo/pages/todo_list_edit.dart';
 import 'package:todo/widgets/admob_banner.dart';
 import 'package:todo/widgets/todolist_firestore.dart';
 import 'package:todo/widgets/side_menu.dart';
@@ -301,13 +302,14 @@ class _HomePageState extends State<HomePage> {
                 : Text('uidがnull'),
             actions: [
               IconButton(
-                icon: Icon(Icons.settings),
+                // icon: Icon(Icons.person_add_alt_rounded),
+                icon: Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       // （2） 実際に表示するページ(ウィジェット)を指定する
-                      builder: (context) => SettingsPage(),
+                      builder: (context) => TodoListEditPage(todoListId: _selectedTodoListId!,),
                     ),
                   );
                 },

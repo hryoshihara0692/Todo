@@ -9,11 +9,13 @@ import 'package:todo/pages/create_account.dart';
 import 'package:todo/pages/home.dart';
 
 import 'package:todo/database/user_data_service.dart';
+import 'package:todo/pages/settings.dart';
 import 'package:todo/pages/todo_list_admin.dart';
 
 import 'package:todo/pages/user_admin.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo/pages/user_edit.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -187,7 +189,36 @@ class SideMenu extends StatelessWidget {
                           Expanded(
                             child: Text(userData!['UserName']),
                           ),
-                          IconButton(icon: Icon(Icons.edit), onPressed: () {}),
+                          IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return UserEditPage();
+                                    },
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      // 右から左
+                                      final Offset begin = Offset(1.0, 0.0);
+                                      // 左から右
+                                      // final Offset begin = Offset(-1.0, 0.0);
+                                      final Offset end = Offset.zero;
+                                      final Animatable<Offset> tween =
+                                          Tween(begin: begin, end: end).chain(
+                                              CurveTween(
+                                                  curve: Curves.easeInOut));
+                                      final Animation<Offset> offsetAnimation =
+                                          animation.drive(tween);
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              }),
                         ],
                       );
                     }
@@ -231,6 +262,15 @@ class SideMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('設定'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  // （2） 実際に表示するページ(ウィジェット)を指定する
+                  builder: (context) => SettingsPage(),
+                ),
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.live_help),
